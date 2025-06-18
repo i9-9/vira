@@ -62,7 +62,7 @@ const amenities = [
 export function AmenitiesSection() {
   return (
     <section id="amenidades" className="py-20" style={{ background: '#a89e87' }}>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-[30px]">
         {/* Title */}
         <h2 className="text-3xl md:text-5xl font-light text-white text-center mb-16 leading-tight">
           COMODIDADES DISEÑADAS<br />PARA EL BIENESTAR

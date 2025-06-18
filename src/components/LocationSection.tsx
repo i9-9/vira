@@ -4,7 +4,7 @@ export function LocationSection() {
   return (
     <section id="ubicacion" className="w-full">
       {/* Header */}
-      <div className="w-full bg-black py-12 text-center">
+      <div className="w-full bg-black py-12 text-center px-[30px]">
         <h2 className="text-4xl md:text-6xl font-light text-white uppercase mb-4 tracking-tight">UBICACIÓN</h2>
         <p className="text-lg md:text-2xl text-white font-light max-w-4xl mx-auto">
           Donde convergen Villa Urquiza, Villa Ortuzar y Parque Chas, cerca de Colegiales y Belgrano R.

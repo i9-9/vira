@@ -5,7 +5,7 @@ import Image from "next/image"
 export function ContactForm() {
   return (
     <section id="contacto" className="w-full bg-[#c0b8ab] py-16 border-t border-black">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch justify-between px-6 md:px-12 gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch justify-between px-[30px] gap-12">
         {/* Left: Form */}
         <div className="flex-1 w-full flex flex-col justify-center">
           <div className="mb-12">
