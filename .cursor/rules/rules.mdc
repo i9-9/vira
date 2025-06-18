@@ -1,0 +1,471 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rules para Vira Landing - Next.js 15 + TypeScript
+
+## Stack Tecnológico (Verificado 2025)
+- **Framework**: Next.js 15.3 con App Router y Turbopack estable
+- **Lenguaje**: TypeScript 5
+- **Estilos**: Tailwind CSS v4.1 + tw-animate-css
+- **UI Components**: Radix UI primitives v1.2.x + shadcn/ui v4
+- **Animaciones**: Motion for React (Framer Motion) v12.18.1
+- **Forms**: React Hook Form v7.58.1 + Zod v3.25.67
+- **CMS**: Contentful v11.7.2
+- **Maps**: Google Maps React Wrapper v1.2.0
+- **React**: React 19 (stable)
+
+## Configuración de Dependencias
+
+### Package.json Scripts Verificados
+```json
+{
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "next lint"
+  }
+}
+```
+
+### Imports Correctos
+```typescript
+// React 19 - sin forwardRef
+import React from 'react'
+import { use } from 'react' // Nueva API para promises y context
+
+// Next.js 15 - APIs asíncronas
+import { cookies, headers } from 'next/headers'
+
+// Motion for React v12 - nueva nomenclatura
+import { motion } from 'motion/react'
+import * as motion from 'motion/react-client' // Para Server Components
+
+// Tailwind v4 - importar en CSS
+// @import "tailwindcss";
+// @import "tw-animate-css";
+```
+
+## Reglas de Desarrollo
+
+### Next.js 15 con Turbopack
+- **Turbopack** es estable para desarrollo, alpha para producción
+- Usar `--turbopack` en scripts de dev y build
+- **APIs asíncronas**: `headers()`, `cookies()`, `params`, `searchParams` son ahora async
+- **Configuración**: `next.config.ts` soportado nativamente
+- **Static Route Indicator** disponible en desarrollo
+- **Instrumentation.js** API es estable
+
+```typescript
+// Correcto en Next.js 15
+export async function generateMetadata({ params, searchParams }) {
+  const cookieStore = await cookies()
+  const headersList = await headers()
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+  
+  return {
+    title: 'Mi página'
+  }
+}
+```
+
+### React 19 Features
+- **No más forwardRef**: Pasar refs como props normales
+- **use() hook**: Reemplaza useEffect para data fetching y useContext
+- **useActionState**: Para manejar estados de formularios
+- **useFormStatus**: Estado de envío de formularios
+- **useOptimistic**: Updates optimistas
+- **Actions**: Manejo automático de formularios
+- **Document Metadata**: Render nativo de `<title>`, `<meta>`, `<link>`
+
+```typescript
+// ❌ Antiguo (React 18)
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, ...props }, ref) => (
+    <button ref={ref} className={className} {...props} />
+  )
+)
+
+// ✅ Nuevo (React 19)
+interface ButtonProps extends React.ComponentProps<'button'> {
+  ref?: React.Ref<HTMLButtonElement>
+}
+
+const Button = ({ className, ref, ...props }: ButtonProps) => (
+  <button ref={ref} className={className} data-slot="button" {...props} />
+)
+
+// use() hook para data fetching
+function UserProfile({ userPromise }) {
+  const user = use(userPromise) // Suspende hasta resolver
+  return <div>{user.name}</div>
+}
+```
+
+### Tailwind CSS v4.1
+- **Engine Oxide**: Hasta 5x más rápido en builds, 100x en incrementales
+- **Configuración CSS-first**: Usar `@theme` en lugar de JavaScript config
+- **Auto-detección de contenido**: No más `content` array
+- **CSS Layers nativo**: `@layer theme, base, components, utilities`
+- **Container Queries**: APIs nativas para contenedores
+- **Colores OKLCH**: Palette modernizada para displays P3
+- **Text Shadows**: `text-shadow-*` utilities
+- **Mask utilities**: `mask-*` para efectos avanzados
+
+```css
+/* Configuración CSS v4 */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-primary: oklch(0.646 0.222 41.116);
+  --color-background: oklch(1 0 0);
+  --font-sans: system-ui, sans-serif;
+  --size-content: 768px;
+}
+
+@layer base {
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium;
+  }
+}
+```
+
+### Radix UI v1.2.x + shadcn/ui v4
+- **data-slot attributes**: Cada primitivo tiene atributo para styling
+- **DirectionProvider**: Necesario para RTL si no usas atributo dir
+- **Nuevos primitivos**: PasswordToggleField, OneTimePasswordField
+- **ESM compatible**: Todos los primitivos son compatibles con ESM
+- **Tree-shakeable**: Instalar `radix-ui` package principal
+
+```typescript
+// shadcn/ui v4 con data-slot
+const Button = ({ className, variant, size, ...props }: ButtonProps) => (
+  <button
+    className={cn(buttonVariants({ variant, size }), className)}
+    data-slot="button"
+    {...props}
+  />
+)
+
+// Usar @theme inline para variantes
+const buttonVariants = cva(
+  'inline-flex items-center justify-center',
+  {
+    variants: {
+      variant: {
+        default: 'bg-[--color-primary] text-[--color-primary-foreground]',
+        outline: 'border border-[--color-border]',
+      }
+    }
+  }
+)
+```
+
+### Motion for React v12.18.1
+- **Sin cambios breaking** de v11 a v12
+- **Compatibilidad React 19**: Completamente soportado
+- **Nueva nomenclatura**: `motion/react` para componentes normales
+- **Server Components**: `motion/react-client` para RSC
+- **Performance**: Mejor handling de MotionValues
+- **IntersectionObserver**: 99% soporte de navegadores
+
+```typescript
+// Imports correctos v12
+import { motion, AnimatePresence } from 'motion/react'
+import { useInView, useAnimation } from 'motion/react'
+
+// Para Server Components
+import * as motion from 'motion/react-client'
+
+// Patrón optimizado
+const AnimatedCard = () => {
+  const controls = useAnimation()
+  const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true })
+
+  React.useEffect(() => {
+    if (inView) {
+      controls.start('visible')
+    }
+  }, [controls, inView])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+      }}
+      style={{ willChange: 'transform, opacity' }}
+    >
+      Content
+    </motion.div>
+  )
+}
+```
+
+### React Hook Form + Zod (Sigue Relevante)
+- **Sigue siendo necesario**: React 19 no reemplaza React Hook Form
+- **Mejor performance**: Componentes no controlados vs controlled de React 19
+- **Validación avanzada**: Zod integration superior a validación nativa
+- **Compatibilidad perfecta**: Funciona sin cambios con React 19
+
+```typescript
+const formSchema = z.object({
+  email: z.string().email("Email válido requerido"),
+  name: z.string().min(2, "Mínimo 2 caracteres")
+})
+
+type FormData = z.infer<typeof formSchema>
+
+const ContactForm = () => {
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: "", name: "" }
+  })
+
+  // Puede combinarse con useActionState de React 19
+  const [state, formAction] = useActionState(submitForm, null)
+
+  return (
+    <form action={formAction}>
+      <input {...form.register("email")} />
+      {form.formState.errors.email && (
+        <span>{form.formState.errors.email.message}</span>
+      )}
+    </form>
+  )
+}
+```
+
+### Google Maps Integration
+- **React Wrapper v1.2.0**: Última versión estable
+- **Lazy Loading**: Implementar carga diferida
+- **TypeScript**: Tipos completos disponibles
+
+```typescript
+import { Wrapper, Status } from '@googlemaps/react-wrapper'
+
+const MapComponent = () => (
+  <Wrapper
+    apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+    render={(status: Status) => {
+      switch (status) {
+        case Status.LOADING:
+          return <div>Loading...</div>
+        case Status.FAILURE:
+          return <div>Error loading map</div>
+        case Status.SUCCESS:
+          return <Map />
+      }
+    }}
+  >
+    <Map />
+  </Wrapper>
+)
+```
+
+### Contentful v11.7.2
+- **ES Modules**: Completamente compatible con ESM
+- **TypeScript**: Tipos generados automáticamente
+- **Rich Text**: Mejor handling de contenido enriquecido
+
+```typescript
+import { createClient } from 'contentful'
+
+const client = createClient({
+  space: process.env.CONTENTFUL_SPACE_ID!,
+  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
+})
+
+// Con Next.js 15 ISR
+export async function generateStaticParams() {
+  const entries = await client.getEntries({ content_type: 'page' })
+  return entries.items.map((item) => ({ slug: item.fields.slug }))
+}
+```
+
+## Patrones de Código Actualizados
+
+### Componente Completo con Todas las Features
+```typescript
+'use client'
+
+import React from 'react'
+import { motion } from 'motion/react'
+import { useInView } from 'react-intersection-observer'
+import { cn } from '@/lib/utils'
+import { cva, type VariantProps } from 'class-variance-authority'
+
+const cardVariants = cva(
+  'rounded-lg border p-6',
+  {
+    variants: {
+      variant: {
+        default: 'bg-[--color-card] border-[--color-border]',
+        featured: 'bg-[--color-primary] border-[--color-primary]',
+      },
+      size: {
+        sm: 'p-4',
+        default: 'p-6',
+        lg: 'p-8',
+      }
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    }
+  }
+)
+
+interface AnimatedCardProps 
+  extends React.ComponentProps<'div'>,
+    VariantProps<typeof cardVariants> {
+  delay?: number
+}
+
+const AnimatedCard = ({ 
+  className, 
+  variant, 
+  size, 
+  delay = 0, 
+  children,
+  ...props 
+}: AnimatedCardProps) => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ 
+        duration: 0.6, 
+        delay,
+        ease: [0.21, 1.11, 0.81, 0.99] 
+      }}
+      className={cn(cardVariants({ variant, size }), className)}
+      data-slot="card"
+      style={{ willChange: 'transform, opacity' }}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+export { AnimatedCard, cardVariants }
+```
+
+### Server Component con React 19
+```typescript
+import { Suspense } from 'react'
+import { headers } from 'next/headers'
+import * as motion from 'motion/react-client'
+
+async function ServerPage({ 
+  params, 
+  searchParams 
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string }>
+}) {
+  const headersList = await headers()
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+  
+  // Fetch data server-side
+  const data = await fetchContent(resolvedParams.slug)
+
+  return (
+    <div className="container mx-auto px-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-4xl font-bold text-[--color-foreground]">
+          {data.title}
+        </h1>
+        
+        <Suspense fallback={<div>Loading content...</div>}>
+          <Content data={data} />
+        </Suspense>
+      </motion.div>
+    </div>
+  )
+}
+```
+
+## Performance y SEO
+
+### Optimización Next.js 15
+- **Turbopack**: Usar para desarrollo y considerar para producción (alpha)
+- **Static Route Indicator**: Monitorear rutas estáticas vs dinámicas
+- **Image Optimization**: Usar Next.js Image component
+- **Bundle Analysis**: Aprovechar tree-shaking mejorado
+
+### Optimización Tailwind v4
+- **CSS Variables**: Aprovechar variables CSS nativas para theming
+- **Layer Organization**: Usar `@layer` para especificidad controlada
+- **JIT Engine**: Oxide genera solo CSS usado
+- **Container Queries**: Usar en lugar de media queries cuando sea apropiado
+
+### Optimización Motion
+- **willChange**: Especificar propiedades que van a animar
+- **IntersectionObserver**: Usar para animaciones scroll-triggered
+- **AnimatePresence**: Para transiciones de montaje/desmontaje
+- **MotionValues**: Para animaciones de alta performance
+
+## Comandos de Desarrollo
+
+```bash
+# Desarrollo con Turbopack
+npm run dev
+
+# Build con Turbopack (alpha)
+npm run build
+
+# Upgrade Tailwind v4
+npx @tailwindcss/upgrade@next
+
+# shadcn/ui con Tailwind v4
+npx shadcn@canary init
+npx shadcn@canary add button
+
+# Verificar compatibilidad
+npm run lint
+```
+
+## Notas Importantes 2025
+
+1. **Turbopack** es estable para dev, alpha para build
+2. **React 19** es estable - usar nuevas APIs sin forwardRef
+3. **Tailwind v4** requiere navegadores modernos (Safari 16.4+, Chrome 111+)
+4. **shadcn/ui v4** solo para proyectos nuevos con Tailwind v4
+5. **Motion v12** sin breaking changes, compatible con React 19
+6. **React Hook Form** sigue siendo relevante y recomendado
+
+## Browser Support
+
+- **Safari**: 16.4+
+- **Chrome**: 111+
+- **Firefox**: 128+
+- **Edge**: Últimas 2 versiones
+
+Para soporte de navegadores legacy, mantener Tailwind v3 hasta migración completa.
