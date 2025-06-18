@@ -35,8 +35,12 @@ export function HeroSection() {
           />
         </div>
       </div>
-      <div className="max-w-5xl mx-auto px-4 mt-0">
-        <h1 className="text-2xl md:text-4xl font-light text-white leading-tight font-sans uppercase tracking-tight mb-0 text-left" style={{letterSpacing: '-0.01em', fontFamily: 'Beatrice, Arial, sans-serif', fontWeight: 300}}>
+      {/* Texto destacado full width */}
+      <div className="w-full bg-[#c0b8ab] px-0 py-8">
+        <h1
+          className="text-3xl md:text-6xl font-light text-white uppercase leading-tight tracking-tight text-left px-6 md:px-16"
+          style={{ fontFamily: 'Beatrice, Arial, sans-serif', fontWeight: 300 }}
+        >
           QUE TU VIDA VIRE<br />A LA COMODIDAD<br />QUE NECESITÁS
         </h1>
       </div>
