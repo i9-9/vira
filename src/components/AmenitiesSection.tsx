@@ -1,193 +1,90 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { useAnimationInView } from "@/hooks/useAnimationInView"
+import Image from "next/image"
 
 const amenities = [
   {
-    id: 1,
-    icon: "🚗",
-    title: "Estacionamiento",
-    description: "Estacionamiento privado y seguro"
+    icon: "/icons/cocheras.svg",
+    label: "Cocheras"
   },
   {
-    id: 2,
-    icon: "🚲",
-    title: "Bicicletas",
-    description: "Espacio para bicicletas"
+    icon: "/icons/bicicleteros.svg",
+    label: "Bicicleteros"
   },
   {
-    id: 3,
-    icon: "🔒",
-    title: "Seguridad 24/7",
-    description: "Sistema de seguridad integral"
+    icon: "/icons/bauleras.svg",
+    label: "Bauleras"
   },
   {
-    id: 4,
-    icon: "🌳",
-    title: "Espacios Verdes",
-    description: "Jardines y áreas verdes"
+    icon: "/icons/jardinurbano.svg",
+    label: "Jardín urbano",
+    sub: "con Doble Acceso Peatonal"
   },
   {
-    id: 5,
-    icon: "💪",
-    title: "Gimnasio",
-    description: "Gimnasio completamente equipado"
+    icon: "/icons/frontdesk.svg",
+    label: "Front Desk",
+    sub: "para Guardia y\nRecepción de paquetería\npor Triunvirato"
   },
   {
-    id: 6,
-    icon: "🏊",
-    title: "Piscina",
-    description: "Piscina con vista panorámica"
+    icon: "/icons/gimnasio.svg",
+    label: "Gimnasio"
   },
   {
-    id: 7,
-    icon: "☀️",
-    title: "Terraza",
-    description: "Terraza con vista a la ciudad"
+    icon: "/icons/sum.svg",
+    label: "SUM"
   },
   {
-    id: 8,
-    icon: "🏋️",
-    title: "Sala de Eventos",
-    description: "Espacio para eventos sociales"
+    icon: "/icons/terraza.svg",
+    label: "Terraza",
+    sub: "con Parrilla\ny pérgola"
   },
   {
-    id: 9,
-    icon: "🚿",
-    title: "Spa",
-    description: "Área de spa y relajación"
+    icon: "/icons/pileta.svg",
+    label: "Pileta"
   },
   {
-    id: 10,
-    icon: "👶",
-    title: "Sala de Juegos",
-    description: "Espacio recreativo para niños"
+    icon: "/icons/solarium.svg",
+    label: "Solárium",
+    sub: "Con duchas"
   },
   {
-    id: 11,
-    icon: "📚",
-    title: "Biblioteca",
-    description: "Sala de lectura y estudio"
+    icon: "/icons/camaras.svg",
+    label: "Cámaras",
+    sub: "de seguridad"
   },
   {
-    id: 12,
-    icon: "🍽️",
-    title: "Cocina Gourmet",
-    description: "Cocina compartida para eventos"
+    icon: "/icons/controldeacceso.svg",
+    label: "Control de acceso",
+    sub: "inteligente"
   }
 ]
 
 export function AmenitiesSection() {
-  const { ref, fadeInUp, staggerContainer, staggerItem } = useAnimationInView({
-    threshold: 0.4,
-    triggerOnce: true,
-  })
-
   return (
-    <section
-      id="amenidades"
-      ref={ref}
-      className="py-20 bg-vira-white"
-    >
+    <section id="amenidades" className="py-20" style={{ background: '#a89e87' }}>
       <div className="container mx-auto px-4">
         {/* Title */}
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-vira-black mb-4">
-            COMODIDADES DISEÑADAS PARA EL BIENESTAR
-          </h2>
-          <p className="text-xl text-vira-medium-gray max-w-3xl mx-auto">
-            Cada amenidad está pensada para mejorar tu calidad de vida y 
-            crear un entorno donde puedas disfrutar al máximo.
-          </p>
-        </motion.div>
-
+        <h2 className="text-3xl md:text-5xl font-light text-white text-center mb-16 leading-tight">
+          COMODIDADES DISEÑADAS<br />PARA EL BIENESTAR
+        </h2>
         {/* Amenities Grid */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
-          {amenities.map((amenity) => (
-            <motion.div
-              key={amenity.id}
-              variants={staggerItem}
-              whileHover={{ 
-                scale: 1.05,
-                rotateY: 5,
-                transition: { duration: 0.3 }
-              }}
-            >
-              <Card className="h-full hover:shadow-lg transition-all duration-300 border-vira-beige/20 hover:border-vira-beige/40">
-                <CardContent className="p-6 text-center">
-                  <div className="text-4xl mb-4">
-                    {amenity.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-vira-black mb-2">
-                    {amenity.title}
-                  </h3>
-                  <p className="text-sm text-vira-medium-gray">
-                    {amenity.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Additional Info */}
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: 0.8 }}
-          className="mt-16 text-center"
-        >
-          <div className="bg-vira-light-gray p-8 rounded-lg max-w-4xl mx-auto">
-            <h3 className="text-2xl font-semibold text-vira-black mb-4">
-              Más que Amenidades, un Estilo de Vida
-            </h3>
-            <p className="text-vira-medium-gray leading-relaxed mb-6">
-              En VIRA, las amenidades no son solo servicios adicionales, 
-              sino parte integral de una experiencia de vida superior. 
-              Cada espacio está diseñado para fomentar la comunidad, 
-              el bienestar y el disfrute de la vida cotidiana.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 text-sm">
-              <div>
-                <h4 className="font-semibold text-vira-black mb-2">
-                  Bienestar Físico
-                </h4>
-                <p className="text-vira-medium-gray">
-                  Gimnasio, piscina y espacios deportivos
-                </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-14 gap-x-6 max-w-5xl mx-auto">
+          {amenities.map((a) => (
+            <div key={a.label} className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 mb-4 flex items-center justify-center">
+                <Image src={a.icon} alt={a.label} width={64} height={64} className="w-16 h-16 object-contain" />
               </div>
-              <div>
-                <h4 className="font-semibold text-vira-black mb-2">
-                  Bienestar Mental
-                </h4>
-                <p className="text-vira-medium-gray">
-                  Spa, biblioteca y áreas de relajación
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-vira-black mb-2">
-                  Bienestar Social
-                </h4>
-                <p className="text-vira-medium-gray">
-                  Salas de eventos y espacios comunes
-                </p>
-              </div>
+              <span className="text-lg md:text-xl text-[#363636] font-normal mb-1">
+                {a.label}
+              </span>
+              {a.sub && (
+                <span className="text-xs md:text-sm text-[#5a5a5a] whitespace-pre-line leading-tight font-normal mt-1">
+                  {a.sub}
+                </span>
+              )}
             </div>
-          </div>
-        </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   )

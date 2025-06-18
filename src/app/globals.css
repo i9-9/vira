@@ -119,6 +119,7 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 }
 
@@ -192,4 +193,12 @@
 
 .animate-fade-in-scale {
   animation: fadeInScale 0.6s ease-out;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

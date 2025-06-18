@@ -35,9 +35,10 @@ export function HeroSection() {
           />
         </div>
       </div>
-      <div className="max-w-5xl mx-auto px-4 mt-8">
-        <h1 className="text-2xl md:text-4xl font-light text-white leading-tight font-sans uppercase tracking-tight mb-2 text-center" style={{letterSpacing: '-0.01em', fontFamily: 'Beatrice, Arial, sans-serif', fontWeight: 300}}>QUE TU VIDA VIRE<br/>A LA COMODIDAD<br/>QUE NECESITÁS</h1>
-        <div className="h-1 w-16 bg-[#c0b8ab] mb-4" />
+      <div className="max-w-5xl mx-auto px-4 mt-0">
+        <h1 className="text-2xl md:text-4xl font-light text-white leading-tight font-sans uppercase tracking-tight mb-0 text-left" style={{letterSpacing: '-0.01em', fontFamily: 'Beatrice, Arial, sans-serif', fontWeight: 300}}>
+          QUE TU VIDA VIRE<br />A LA COMODIDAD<br />QUE NECESITÁS
+        </h1>
       </div>
     </section>
   )
