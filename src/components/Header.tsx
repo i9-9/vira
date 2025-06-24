@@ -25,22 +25,19 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 shadow-sm border-b border-[#c0b8ab]/30 backdrop-blur-md">
-        <div className="w-full px-[15px] py-2 md:py-4 flex items-center justify-between">
-          {/* Logo VIRA */}
-          <motion.a 
+        <div className="w-full max-w-7xl mx-auto px-[15px] py-4 md:py-8 flex items-center justify-between relative h-[80px] md:h-[120px]">
+          {/* Logo VIRA - Center */}
+          <a 
             href="#inicio" 
-            className="block h-12 md:h-16 w-auto"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            className="absolute left-1/2 -translate-x-1/2 block h-16 md:h-24 w-auto"
           >
-            <img src="/logos/vira_1.svg" alt="VIRA" className="h-12 md:h-16 w-auto object-contain" />
-          </motion.a>
+            <img src="/logos/vira_1.svg" alt="VIRA" className="h-16 md:h-24 w-auto object-contain" />
+          </a>
 
-          {/* Hamburger Menu Button */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="relative w-12 h-12 flex items-center justify-center z-50"
+            className="md:hidden relative w-12 h-12 flex items-center justify-center z-50"
             aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
           >
             <div className="relative w-6 h-6 flex items-center justify-center">
@@ -87,11 +84,11 @@ export function Header() {
         </div>
       </header>
 
-      {/* Full Screen Menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-white"
+            className="md:hidden fixed inset-0 z-40 bg-white"
             initial={{ y: "-100%" }}
             animate={{ y: "0%" }}
             exit={{ y: "-100%" }}
@@ -106,9 +103,9 @@ export function Header() {
                 {navigationItems.map((item, index) => (
                   <motion.button
                     key={item.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     transition={{ 
                       duration: 0.4, 
                       delay: 0.4 + (index * 0.08) 

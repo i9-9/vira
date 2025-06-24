@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header"
-import { HeroSection } from "@/components/HeroSection"
+import { HeroSection, HeroTextBlock } from "@/components/HeroSection"
 import { LocationSection } from "@/components/LocationSection"
 import { LifestyleSection } from "@/components/LifestyleSection"
 import { AmenitiesSection } from "@/components/AmenitiesSection"
@@ -13,6 +13,7 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
       <HeroSection />
+      <HeroTextBlock />
       <LocationSection />
       <LifestyleSection />
       <AmenitiesSection />
