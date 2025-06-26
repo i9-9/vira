@@ -24,7 +24,7 @@ const Map = ({ center, zoom }: MapProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<google.maps.Map | null>(null)
   const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
-  const [markers, setMarkers] = useState<{ [key: string]: google.maps.Marker }>({})
+  const [markers, setMarkers] = useState<{ [key: string]: google.maps.marker.AdvancedMarkerElement }>({})
   const [hoveredPoint, setHoveredPoint] = useState<string>()
 
   // Inicializar mapa
@@ -55,7 +55,7 @@ const Map = ({ center, zoom }: MapProps) => {
       // Limpiar marcadores al desmontar
       return () => {
         Object.values(markers).forEach((marker) => {
-          marker.setMap(null)
+          marker.map = null
         })
       }
     }
@@ -66,20 +66,19 @@ const Map = ({ center, zoom }: MapProps) => {
     if (!map || !infoWindow) return
 
     // Crear marcador del proyecto
-    const projectMarker = new window.google.maps.Marker({
+    const projectPin = new window.google.maps.marker.PinElement({
+      scale: 1.2,
+      background: '#E2C18A',
+      borderColor: '#2B303B',
+      glyphColor: '#2B303B',
+    })
+
+    const projectMarker = new window.google.maps.marker.AdvancedMarkerElement({
       position: projectLocation,
       map,
       title: 'VIRA TRIUNVIRATO',
-      icon: {
-        path: window.google.maps.SymbolPath.CIRCLE,
-        scale: 12,
-        fillColor: '#E2C18A',
-        fillOpacity: 1,
-        strokeColor: '#2B303B',
-        strokeWeight: 2,
-      },
+      content: projectPin.element,
       zIndex: 1000,
-      animation: window.google.maps.Animation.DROP,
     })
 
     projectMarker.addListener('click', () => {
@@ -98,19 +97,18 @@ const Map = ({ center, zoom }: MapProps) => {
     Object.entries(pointsOfInterest).forEach(([, points], categoryIndex) => {
       points.forEach((point, pointIndex) => {
         setTimeout(() => {
-          const marker = new window.google.maps.Marker({
+          const pin = new window.google.maps.marker.PinElement({
+            scale: 0.8,
+            background: '#8BA0BD',
+            borderColor: '#FFFFFF',
+            glyphColor: '#FFFFFF',
+          })
+
+          const marker = new window.google.maps.marker.AdvancedMarkerElement({
             position: { lat: point.lat, lng: point.lng },
             map,
             title: point.name,
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: '#8BA0BD',
-              fillOpacity: 0.8,
-              strokeColor: '#FFFFFF',
-              strokeWeight: 1,
-            },
-            animation: window.google.maps.Animation.DROP,
+            content: pin.element,
             zIndex: 1,
           })
 
@@ -139,7 +137,7 @@ const Map = ({ center, zoom }: MapProps) => {
 
     return () => {
       Object.values(markers).forEach((marker) => {
-        marker.setMap(null)
+        marker.map = null
       })
     }
   }, [map, infoWindow, markers])
@@ -149,11 +147,18 @@ const Map = ({ center, zoom }: MapProps) => {
     if (!map || !hoveredPoint || !markers[hoveredPoint]) return
     
     const marker = markers[hoveredPoint]
-    map.panTo(marker.getPosition() as google.maps.LatLng)
-    marker.setAnimation(window.google.maps.Animation.BOUNCE)
+    map.panTo(marker.position as google.maps.LatLng)
+    
+    // Animar el marcador con CSS
+    if (marker.content instanceof HTMLElement) {
+      marker.content.style.transform = 'scale(1.2)'
+      marker.content.style.transition = 'transform 0.2s ease-in-out'
+    }
     
     const timeout = setTimeout(() => {
-      marker.setAnimation(null)
+      if (marker.content instanceof HTMLElement) {
+        marker.content.style.transform = 'scale(1)'
+      }
     }, 1500)
 
     return () => clearTimeout(timeout)
