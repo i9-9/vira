@@ -4,6 +4,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Wrapper } from '@googlemaps/react-wrapper'
+import type { Map as GoogleMap, InfoWindow, Marker, LatLng, LatLngBounds, Size, SymbolPath, Animation, ControlPosition } from 'google.maps'
 import { cn } from '@/lib/utils'
 import { mapStyles, pointsOfInterest, projectLocation } from '@/lib/map-config'
 import { Button } from './ui/button'
@@ -16,9 +17,9 @@ interface MapProps {
 
 const Map = ({ center, zoom }: MapProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
-  const [markers, setMarkers] = useState<{ [key: string]: google.maps.Marker }>({})
+  const [map, setMap] = useState<GoogleMap | null>(null)
+  const [infoWindow, setInfoWindow] = useState<InfoWindow | null>(null)
+  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({})
   const [hoveredPoint, setHoveredPoint] = useState<string>()
 
   // Inicializar mapa
@@ -143,7 +144,7 @@ const Map = ({ center, zoom }: MapProps) => {
     if (!map || !hoveredPoint || !markers[hoveredPoint]) return
     
     const marker = markers[hoveredPoint]
-    map.panTo(marker.getPosition() as google.maps.LatLng)
+    map.panTo(marker.getPosition() as LatLng)
     marker.setAnimation(window.google.maps.Animation.BOUNCE)
     
     const timeout = setTimeout(() => {
