@@ -13,8 +13,8 @@ export function HeroSection() {
         {/* Imagen izquierda */}
         <div className="flex-1 min-h-[240px] h-full relative">
           <Image
-            src="/images/hero/2.png"
-            alt="Hero izquierda"
+            src="/images/gallery/3C_FORMA_TRIUNVIRATO_UNIDAD FUNC_F.jpg"
+            alt="Interior de unidad funcional"
             fill
             className="object-cover"
             priority
@@ -24,10 +24,10 @@ export function HeroSection() {
         {/* Imagen derecha */}
         <div className="flex-1 min-h-[240px] h-full relative">
           <Image
-            src="/images/hero/1.png"
-            alt="Hero derecha"
+            src="/images/gallery/3C_FORMA_TRIUNVIRATO_PILETA_F.jpg"
+            alt="Vista de la pileta y espacios comunes"
             fill
-            className="object-cover"
+            className="object-cover object-[25%_75%]"
             priority
             draggable={false}
           />

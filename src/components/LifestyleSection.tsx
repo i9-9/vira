@@ -5,28 +5,24 @@ import React from "react"
 
 const images = [
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 3.jpg",
-    alt: "Patio interior con vegetación y personas"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_PATIOINTERNO_F.jpg",
+    alt: "Patio interno con vegetación y espacios de encuentro"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 4.jpg",
-    alt: "Terraza con mesa y sillas bajo pérgola"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_HALL_F.jpg",
+    alt: "Hall de entrada con diseño moderno"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 3.jpg",
-    alt: "Patio interior con vegetación y personas"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_INT GYM_F01.jpg",
+    alt: "Gimnasio equipado con vista al exterior"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 4.jpg",
-    alt: "Terraza con mesa y sillas bajo pérgola"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_SUM PARRILLA_F.jpg",
+    alt: "SUM con parrilla y espacio de entretenimiento"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 3.jpg",
-    alt: "Patio interior con vegetación y personas"
-  },
-  {
-    src: "/images/PHOTO-2025-06-03-11-21-21 4.jpg",
-    alt: "Terraza con mesa y sillas bajo pérgola"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_PILETA_F.jpg",
+    alt: "Pileta con solarium y áreas de descanso"
   }
 ]
 

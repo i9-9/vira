@@ -16,8 +16,10 @@ export function TypologiesSection() {
           </div>
           <div className="flex-1 flex md:justify-end md:items-center">
             <a
-              href="#"
+              href="/pdf/brochure_vira.pdf"
               className="bg-[#f3f3f3] text-[#444] text-lg font-medium rounded-md px-8 py-4 shadow transition hover:bg-white hover:text-black"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               VER BROCHURE
             </a>

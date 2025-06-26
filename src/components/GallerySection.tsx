@@ -5,36 +5,20 @@ import React from "react"
 
 const images = [
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 5.jpg",
-    alt: "Vista interior con pileta"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADA ACCESO_F.jpg",
+    alt: "Fachada principal y acceso al edificio"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 6.jpg",
-    alt: "Gimnasio equipado"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADA TRIUNVIRATO_F.jpg",
+    alt: "Vista de la fachada sobre Av. Triunvirato"
   },
   {
-    src: "/images/PHOTO-2025-06-03-11-21-21 7.jpg",
-    alt: "Espacio común luminoso"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADAINCAS_F.jpg",
+    alt: "Vista de la fachada sobre calle Los Incas"
   },
   {
-    src: "/images/3C_FORMA_TRIUNVIRATO_PILETA_CAM02_01_B.jpg",
-    alt: "Pileta y solarium"
-  },
-  {
-    src: "/images/PHOTO-2025-06-03-11-21-21 5.jpg",
-    alt: "Vista interior con pileta"
-  },
-  {
-    src: "/images/PHOTO-2025-06-03-11-21-21 6.jpg",
-    alt: "Gimnasio equipado"
-  },
-  {
-    src: "/images/PHOTO-2025-06-03-11-21-21 7.jpg",
-    alt: "Espacio común luminoso"
-  },
-  {
-    src: "/images/3C_FORMA_TRIUNVIRATO_PILETA_CAM02_01_B.jpg",
-    alt: "Pileta y solarium"
+    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_UNIDAD FUNC_F.jpg",
+    alt: "Interior de unidad funcional modelo"
   }
 ]
 
