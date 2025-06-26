@@ -22,12 +22,12 @@ export function HeroSection() {
           />
         </div>
         {/* Imagen derecha */}
-        <div className="flex-1 min-h-[240px] h-full relative">
+        <div className="flex-1 min-h-[240px] h-full relative overflow-hidden">
           <Image
             src="/images/gallery/3C_FORMA_TRIUNVIRATO_PILETA_F.jpg"
             alt="Vista de la pileta y espacios comunes"
             fill
-            className="object-cover object-[25%_75%]"
+            className="object-cover object-[0%_100%]"
             priority
             draggable={false}
           />
