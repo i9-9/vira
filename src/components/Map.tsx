@@ -1,5 +1,7 @@
 'use client'
 
+/// <reference types="@types/google.maps" />
+
 import React, { useEffect, useRef, useState } from 'react'
 import { Wrapper } from '@googlemaps/react-wrapper'
 import { cn } from '@/lib/utils'
