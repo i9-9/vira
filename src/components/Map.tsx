@@ -4,7 +4,6 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Wrapper } from '@googlemaps/react-wrapper'
-import type { Map as GoogleMap, InfoWindow, Marker, LatLng, LatLngBounds, Size, SymbolPath, Animation, ControlPosition } from 'google.maps'
 import { cn } from '@/lib/utils'
 import { mapStyles, pointsOfInterest, projectLocation } from '@/lib/map-config'
 import { Button } from './ui/button'
@@ -15,11 +14,17 @@ interface MapProps {
   zoom: number
 }
 
+declare global {
+  interface Window {
+    google: typeof google
+  }
+}
+
 const Map = ({ center, zoom }: MapProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<GoogleMap | null>(null)
-  const [infoWindow, setInfoWindow] = useState<InfoWindow | null>(null)
-  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({})
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
+  const [markers, setMarkers] = useState<{ [key: string]: google.maps.Marker }>({})
   const [hoveredPoint, setHoveredPoint] = useState<string>()
 
   // Inicializar mapa
@@ -130,7 +135,7 @@ const Map = ({ center, zoom }: MapProps) => {
     Object.values(pointsOfInterest).flat().forEach((point) => {
       bounds.extend({ lat: point.lat, lng: point.lng })
     })
-    map.fitBounds(bounds, { padding: 50 })
+    map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 })
 
     return () => {
       Object.values(markers).forEach((marker) => {
@@ -144,7 +149,7 @@ const Map = ({ center, zoom }: MapProps) => {
     if (!map || !hoveredPoint || !markers[hoveredPoint]) return
     
     const marker = markers[hoveredPoint]
-    map.panTo(marker.getPosition() as LatLng)
+    map.panTo(marker.getPosition() as google.maps.LatLng)
     marker.setAnimation(window.google.maps.Animation.BOUNCE)
     
     const timeout = setTimeout(() => {
