@@ -1,28 +1,28 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { Wrapper, Status } from '@googlemaps/react-wrapper'
-import { mapStyles, projectLocation, pointsOfInterest, type PointOfInterest } from '@/lib/map-config'
+import React, { useEffect, useRef, useState } from 'react'
+import { Wrapper } from '@googlemaps/react-wrapper'
+import { cn } from '@/lib/utils'
+import { mapStyles, pointsOfInterest, projectLocation } from '@/lib/map-config'
+import { Button } from './ui/button'
+import { ScrollArea } from './ui/scroll-area'
 
-// Componente del mapa interno
-function MapComponent({
-  center,
-  zoom,
-  hoveredPoint,
-}: {
-  center: google.maps.LatLngLiteral
+interface MapProps {
+  center: { lat: number; lng: number }
   zoom: number
-  hoveredPoint: string | null
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map>()
-  const [markers, setMarkers] = useState<{ [key: string]: google.maps.Marker }>({})
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow>()
+}
 
-  // Inicializar el mapa
+const Map = ({ center, zoom }: MapProps) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
+  const [markers, setMarkers] = useState<{ [key: string]: google.maps.Marker }>({})
+  const [hoveredPoint, setHoveredPoint] = useState<string>()
+
+  // Inicializar mapa
   useEffect(() => {
     if (ref.current && !map) {
-      const mapInstance = new google.maps.Map(ref.current, {
+      const newMap = new window.google.maps.Map(ref.current, {
         center,
         zoom,
         styles: mapStyles,
@@ -30,104 +30,99 @@ function MapComponent({
         zoomControl: true,
         scrollwheel: false,
         zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_CENTER,
+          position: window.google.maps.ControlPosition.RIGHT_CENTER,
         },
         gestureHandling: 'cooperative',
-        backgroundColor: '#E5DDD6',
+        backgroundColor: '#f5f5f5',
       })
-      setMap(mapInstance)
 
-      // Crear ventana de información
-      setInfoWindow(new google.maps.InfoWindow({
-        maxWidth: 280,
-        pixelOffset: new google.maps.Size(0, -10),
-      }))
+      const newInfoWindow = new window.google.maps.InfoWindow({
+        maxWidth: 200,
+        pixelOffset: new window.google.maps.Size(0, -30),
+      })
+
+      setMap(newMap)
+      setInfoWindow(newInfoWindow)
+
+      // Limpiar marcadores al desmontar
+      return () => {
+        Object.values(markers).forEach((marker) => {
+          marker.setMap(null)
+        })
+      }
     }
-  }, [ref, map, center, zoom])
+  }, [center, zoom, map, markers])
 
-  // Crear y actualizar marcadores
+  // Crear marcadores para puntos de interés con delay
   useEffect(() => {
     if (!map || !infoWindow) return
 
-    // Limpiar marcadores existentes
-    Object.values(markers).forEach(marker => marker.setMap(null))
-    const newMarkers: { [key: string]: google.maps.Marker } = {}
-
-    // Marcador del proyecto
-    const projectMarker = new google.maps.Marker({
+    // Crear marcador del proyecto
+    const projectMarker = new window.google.maps.Marker({
       position: projectLocation,
       map,
-      title: "VIRA TRIUNVIRATO",
+      title: 'VIRA TRIUNVIRATO',
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
+        path: window.google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: "#E2C18A",
+        fillColor: '#E2C18A',
         fillOpacity: 1,
-        strokeColor: "#2B303B",
+        strokeColor: '#2B303B',
         strokeWeight: 2,
       },
       zIndex: 1000,
-      animation: google.maps.Animation.DROP,
+      animation: window.google.maps.Animation.DROP,
     })
 
     projectMarker.addListener('click', () => {
       infoWindow.setContent(`
-        <div style="padding: 12px; text-align: center; font-family: 'Beatrice', Arial, sans-serif;">
-          <h3 style="margin: 0 0 8px 0; color: #2B303B; font-size: 16px; font-weight: bold;">
-            VIRA TRIUNVIRATO
-          </h3>
-          <p style="margin: 0; color: #536A84; font-size: 12px; line-height: 1.3;">
-            📍 ${projectLocation.address}
-          </p>
+        <div style="padding: 8px;">
+          <h3 style="margin: 0 0 8px; font-weight: 600;">VIRA TRIUNVIRATO</h3>
+          <p style="margin: 0; font-size: 14px;">${projectLocation.address}</p>
         </div>
       `)
       infoWindow.open(map, projectMarker)
     })
 
-    newMarkers["proyecto"] = projectMarker
+    setMarkers((prev) => ({ ...prev, proyecto: projectMarker }))
 
-    // Crear marcadores para puntos de interés con delay
-    Object.entries(pointsOfInterest).forEach(([category, points], categoryIndex) => {
-      points.forEach((point: PointOfInterest, pointIndex) => {
+    // Crear marcadores de puntos de interés
+    Object.entries(pointsOfInterest).forEach(([, points], categoryIndex) => {
+      points.forEach((point, pointIndex) => {
         setTimeout(() => {
-          const marker = new google.maps.Marker({
+          const marker = new window.google.maps.Marker({
             position: { lat: point.lat, lng: point.lng },
             map,
             title: point.name,
             icon: {
-              path: google.maps.SymbolPath.CIRCLE,
+              path: window.google.maps.SymbolPath.CIRCLE,
               scale: 8,
-              fillColor: "#8BA0BD",
+              fillColor: '#8BA0BD',
               fillOpacity: 0.8,
-              strokeColor: "#FFFFFF",
+              strokeColor: '#FFFFFF',
               strokeWeight: 1,
             },
-            animation: google.maps.Animation.DROP,
+            animation: window.google.maps.Animation.DROP,
+            zIndex: 1,
           })
 
           marker.addListener('click', () => {
             infoWindow.setContent(`
-              <div style="padding: 12px; text-align: center; font-family: 'Beatrice', Arial, sans-serif;">
-                <h3 style="margin: 0 0 8px 0; color: #2B303B; font-size: 14px; font-weight: bold;">
-                  ${point.name}
-                </h3>
-                <p style="margin: 0; color: #536A84; font-size: 12px; line-height: 1.3;">
-                  📍 ${point.address}
-                </p>
+              <div style="padding: 8px;">
+                <h3 style="margin: 0 0 8px; font-weight: 600;">${point.name}</h3>
+                <p style="margin: 0; font-size: 14px;">${point.address}</p>
               </div>
             `)
             infoWindow.open(map, marker)
           })
 
-          newMarkers[point.name] = marker
-        }, (categoryIndex * points.length + pointIndex) * 150) // Delay secuencial para animación
+          setMarkers((prev) => ({ ...prev, [point.name]: marker }))
+        }, (categoryIndex * points.length + pointIndex) * 200)
       })
     })
 
-    setMarkers(newMarkers)
-
     // Ajustar el zoom para mostrar todos los marcadores
-    const bounds = new google.maps.LatLngBounds()
+    const bounds = new window.google.maps.LatLngBounds()
     bounds.extend(projectLocation)
     Object.values(pointsOfInterest).flat().forEach((point) => {
       bounds.extend({ lat: point.lat, lng: point.lng })
@@ -135,9 +130,11 @@ function MapComponent({
     map.fitBounds(bounds, { padding: 50 })
 
     return () => {
-      Object.values(newMarkers).forEach(marker => marker.setMap(null))
+      Object.values(markers).forEach((marker) => {
+        marker.setMap(null)
+      })
     }
-  }, [map, infoWindow])
+  }, [map, infoWindow, markers])
 
   // Manejar hover en puntos
   useEffect(() => {
@@ -145,86 +142,71 @@ function MapComponent({
     
     const marker = markers[hoveredPoint]
     map.panTo(marker.getPosition() as google.maps.LatLng)
-    marker.setAnimation(google.maps.Animation.BOUNCE)
+    marker.setAnimation(window.google.maps.Animation.BOUNCE)
     
-    // Detener la animación después de un momento
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       marker.setAnimation(null)
     }, 1500)
+
+    return () => clearTimeout(timeout)
   }, [hoveredPoint, markers, map])
 
-  return <div ref={ref} className="w-full h-full" />
-}
-
-// Componente wrapper principal
-export function Map() {
-  const [hoveredPoint, setHoveredPoint] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
-
-  const renderMap = (status: Status) => {
-    switch (status) {
-      case Status.LOADING:
-        return (
-          <div className="w-full h-full flex items-center justify-center bg-[#E5DDD6]">
-            <span className="text-[#2B303B] text-lg">Cargando mapa...</span>
-          </div>
-        )
-      case Status.FAILURE:
-        return (
-          <div className="w-full h-full flex items-center justify-center bg-[#E5DDD6]">
-            <span className="text-[#2B303B] text-lg">Error al cargar el mapa</span>
-          </div>
-        )
-      case Status.SUCCESS:
-        return (
-          <MapComponent
-            center={projectLocation}
-            zoom={16}
-            hoveredPoint={hoveredPoint}
-          />
-        )
-    }
-  }
-
   const categoryLabels: { [key: string]: string } = {
-    gastronomia: "Gastronomía",
-    servicios: "Servicios",
-    transporte: "Transporte",
-    educacion: "Educación"
+    gastronomia: 'Gastronomía',
+    servicios: 'Servicios',
+    transporte: 'Transporte',
+    educacion: 'Educación',
   }
 
   return (
-    <div className="w-full h-full relative">
-      <Wrapper apiKey={apiKey} render={renderMap} />
-      {/* Lista de puntos de interés */}
-      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-lg max-w-[300px] max-h-[calc(100%-2rem)] overflow-y-auto">
-        <h3 className="text-lg font-medium mb-4 text-[#2B303B]">Puntos de Interés</h3>
-        {Object.entries(pointsOfInterest).map(([category, points]) => (
-          <div 
-            key={category} 
-            className={`mb-4 transition-opacity duration-300 ${
-              selectedCategory && selectedCategory !== category ? 'opacity-50' : 'opacity-100'
-            }`}
-            onMouseEnter={() => setSelectedCategory(category)}
-            onMouseLeave={() => setSelectedCategory(null)}
-          >
-            <h4 className="text-sm font-medium text-[#536A84] capitalize mb-2">
-              {categoryLabels[category]}
-            </h4>
-            {points.map((point) => (
-              <p
-                key={point.name}
-                className="text-sm text-[#2B303B] mb-1 cursor-pointer hover:text-[#E2C18A] transition-colors"
-                onMouseEnter={() => setHoveredPoint(point.name)}
-                onMouseLeave={() => setHoveredPoint(null)}
-              >
-                {point.name}
-              </p>
-            ))}
-          </div>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 h-[600px] lg:h-[700px]">
+      <ScrollArea className="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="p-4 space-y-2">
+          {Object.entries(pointsOfInterest).map(([category, points]) => (
+            <div key={category} className="space-y-2">
+              <h3 className="font-medium">{categoryLabels[category]}</h3>
+              {points.map((point) => (
+                <Button
+                  key={point.name}
+                  variant="ghost"
+                  className={cn(
+                    'w-full justify-start text-left font-normal',
+                    hoveredPoint === point.name && 'bg-accent'
+                  )}
+                  onMouseEnter={() => setHoveredPoint(point.name)}
+                  onMouseLeave={() => setHoveredPoint(undefined)}
+                  onClick={() => {
+                    if (!infoWindow || !markers[point.name]) return
+                    infoWindow.setContent(`
+                      <div style="padding: 8px;">
+                        <h3 style="margin: 0 0 8px; font-weight: 600;">${point.name}</h3>
+                        <p style="margin: 0; font-size: 14px;">${point.address}</p>
+                      </div>
+                    `)
+                    infoWindow.open(map, markers[point.name])
+                  }}
+                >
+                  {point.name}
+                </Button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      <div ref={ref} className="h-full rounded-lg" />
     </div>
   )
-} 
+}
+
+const MapWrapper = () => {
+  return (
+    <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+      <Map
+        center={projectLocation}
+        zoom={15}
+      />
+    </Wrapper>
+  )
+}
+
+export default MapWrapper
