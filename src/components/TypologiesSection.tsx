@@ -7,7 +7,7 @@ export function TypologiesSection() {
         <h2 className="text-4xl md:text-6xl font-light text-white text-center mb-20 tracking-tight uppercase">TIPOLOGÍAS</h2>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <div className="flex-1">
-            <p className="text-2xl md:text-3xl font-light text-white leading-tight">
+            <p className="text-xl md:text-3xl font-light text-white leading-tight">
               LA VIDA SE TRANSFORMA EN<br />
               VIRA TRIUNVIRATO UNIDADES<br />
               SIMPLES & DUPLEX 1 / 2 / 3 / 4<br />

@@ -104,11 +104,13 @@ export function ContactForm() {
         {/* Right: Logo */}
         <div className="w-full md:w-1/2 flex flex-col items-center md:items-end justify-center mt-12 md:mt-0">
           <Image
-            src="/logos/vira_2.svg"
+            src="/logos/vira_2.png"
             alt="VIRA logo"
             width={240}
             height={120}
             className="mb-2"
+            priority
+            quality={100}
           />
         </div>
       </div>

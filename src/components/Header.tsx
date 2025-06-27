@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
 import { smoothScrollTo } from "@/lib/utils"
 
 const navigationItems = [
@@ -32,13 +31,13 @@ export function Header() {
             href="#inicio" 
             className="absolute left-1/2 -translate-x-1/2 block h-16 md:h-24 w-auto"
           >
-            <Image 
-              src="/logos/vira_1.svg" 
+            <img 
+              src="/logos/vira_1.png"
               alt="VIRA" 
               width={120}
               height={48}
               className="h-16 md:h-24 w-auto object-contain"
-              priority
+
             />
           </a>
 
