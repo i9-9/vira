@@ -1,225 +1,497 @@
 'use client'
 
-/// <reference types="@types/google.maps" />
+import { useState, useEffect, useRef } from 'react'
 
-import React, { useEffect, useRef, useState } from 'react'
-import { Wrapper } from '@googlemaps/react-wrapper'
-import { cn } from '@/lib/utils'
-import { mapStyles, pointsOfInterest, projectLocation } from '@/lib/map-config'
-import { Button } from './ui/button'
-import { ScrollArea } from './ui/scroll-area'
+// Variable global para evitar múltiples cargas
+let isGoogleMapsLoading = false;
+let isGoogleMapsLoaded = false;
 
-interface MapProps {
-  center: { lat: number; lng: number }
-  zoom: number
+// Definir tipos para Google Maps
+interface GoogleMapsMarker {
+  setAnimation: (animation: unknown) => void;
+  getPosition: () => unknown;
+  addListener: (event: string, callback: () => void) => void;
+  content?: HTMLElement;
+  position: { lat: number; lng: number };
 }
 
-declare global {
-  interface Window {
-    google: typeof google
-  }
+interface GoogleMapsMap {
+  panTo: (position: unknown) => void;
 }
 
-const Map = ({ center, zoom }: MapProps) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
-  const [markers, setMarkers] = useState<{ [key: string]: google.maps.marker.AdvancedMarkerElement }>({})
-  const [hoveredPoint, setHoveredPoint] = useState<string>()
+interface GoogleMapsType {
+  maps: {
+    Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapsMap;
+    Marker: new (options: Record<string, unknown>) => GoogleMapsMarker;
+    InfoWindow: new (options: Record<string, unknown>) => {
+      open: (map: GoogleMapsMap, marker: GoogleMapsMarker) => void;
+    };
+    LatLng: new (lat: number, lng: number) => unknown;
+    Size: new (width: number, height: number) => unknown;
+    Point: new (x: number, y: number) => unknown;
+  };
+}
 
-  // Inicializar mapa
-  useEffect(() => {
-    if (ref.current && !map) {
-      const newMap = new window.google.maps.Map(ref.current, {
-        center,
-        zoom,
-        styles: mapStyles,
-        disableDefaultUI: true,
-        zoomControl: true,
-        scrollwheel: false,
-        zoomControlOptions: {
-          position: window.google.maps.ControlPosition.RIGHT_CENTER,
-        },
-        gestureHandling: 'cooperative',
-        backgroundColor: '#f5f5f5',
-      })
+interface WindowWithGoogleMaps extends Window {
+  google?: GoogleMapsType;
+  [key: string]: unknown;
+}
 
-      const newInfoWindow = new window.google.maps.InfoWindow({
-        maxWidth: 200,
-        pixelOffset: new window.google.maps.Size(0, -30),
-      })
+interface PointOfInterest {
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
-      setMap(newMap)
-      setInfoWindow(newInfoWindow)
+interface PointsData {
+  gastronomia: PointOfInterest[];
+  servicios: PointOfInterest[];
+}
 
-      // Limpiar marcadores al desmontar
-      return () => {
-        Object.values(markers).forEach((marker) => {
-          marker.map = null
-        })
-      }
+interface MarkerWithCoords extends GoogleMapsMarker {
+  originalCoords?: { lat: number; lng: number };
+}
+
+// Ubicación del proyecto Vira Triunvirato
+const projectLocation = { 
+  lat: -34.5815601744141, 
+  lng: -58.474381348588494,
+  address: "Av. Triunvirato, Villa Urquiza, CABA"
+};
+
+// Puntos de interés cercanos a Vira Triunvirato
+const pointsOfInterest: PointsData = {
+  gastronomia: [
+    // Basado en el mapa proporcionado - agregar coordenadas aproximadas
+    { name: "DOHO ZONA", address: "Av. Álvarez Thomas", lat: -34.5795, lng: -58.4725 },
+  ],
+  servicios: [
+    { name: "Estación Los Incas - Línea B SUBE", address: "Los Incas", lat: -34.5820, lng: -58.4740 },
+    { name: "Supermercado Jumbo", address: "Av. Triunvirato", lat: -34.5825, lng: -58.4735 },
+    { name: "Sport Club", address: "Cerca de Av. Triunvirato", lat: -34.5830, lng: -58.4730 },
+    { name: "Centro Comercial Villa Urquiza", address: "Villa Urquiza", lat: -34.5805, lng: -58.4720 },
+    { name: "Club Arquitectura", address: "Villa Urquiza", lat: -34.5790, lng: -58.4710 },
+    { name: "Estación de Tren FFCC Mitre", address: "FFCC Mitre", lat: -34.5780, lng: -58.4695 },
+    { name: "Facultad de Agronomía", address: "UBA", lat: -34.5775, lng: -58.4800 },
+    { name: "Sede UBA", address: "Universidad de Buenos Aires", lat: -34.5850, lng: -58.4750 },
+    { name: "Estación de Tren FFCC Urquiza", address: "FFCC Urquiza", lat: -34.5855, lng: -58.4780 },
+    { name: "Diagnóstico Maipú", address: "Centro médico", lat: -34.5870, lng: -58.4820 },
+    { name: "Centro Médico Adventista", address: "Atención médica", lat: -34.5760, lng: -58.4720 }
+  ]
+};
+
+// Función para cargar Google Maps
+function loadGoogleMaps(apiKey: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const windowWithGM = window as unknown as WindowWithGoogleMaps;
+    
+    // Si ya está cargado, resolver inmediatamente
+    if (isGoogleMapsLoaded && windowWithGM.google?.maps?.Map) {
+      console.log('✅ Google Maps ya cargado');
+      resolve();
+      return;
     }
-  }, [center, zoom, map, markers])
 
-  // Crear marcadores para puntos de interés con delay
+    // Si ya se está cargando, esperar
+    if (isGoogleMapsLoading) {
+      console.log('⏳ Google Maps ya se está cargando, esperando...');
+      const checkInterval = setInterval(() => {
+        if (isGoogleMapsLoaded && windowWithGM.google?.maps?.Map) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        reject(new Error('Timeout esperando Google Maps'));
+      }, 10000);
+      return;
+    }
+
+    // Marcar como cargando
+    isGoogleMapsLoading = true;
+
+    console.log('🔄 Cargando Google Maps...');
+
+    // Función de callback global
+    const callbackName = 'initGoogleMapsSimple';
+    windowWithGM[callbackName] = () => {
+      console.log('✅ Google Maps cargado exitosamente');
+      isGoogleMapsLoaded = true;
+      isGoogleMapsLoading = false;
+      resolve();
+    };
+
+    // Crear script solo si no existe
+    let script = document.getElementById('google-maps-api') as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = 'google-maps-api';
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
+      script.async = true;
+      script.defer = true;
+      
+      script.onerror = () => {
+        console.error('❌ Error cargando Google Maps');
+        isGoogleMapsLoading = false;
+        reject(new Error('Error cargando Google Maps'));
+      };
+
+      document.head.appendChild(script);
+    } else {
+      // El script ya existe, solo esperar a que se cargue
+      const checkExisting = setInterval(() => {
+        if (windowWithGM.google?.maps?.Map) {
+          clearInterval(checkExisting);
+          isGoogleMapsLoaded = true;
+          isGoogleMapsLoading = false;
+          resolve();
+        }
+      }, 100);
+    }
+  });
+}
+
+function GoogleMapComponent({ apiKey, hoveredPoint, onMarkerHover }: { 
+  apiKey: string,
+  hoveredPoint: string | null,
+  onMarkerHover: (pointName: string | null) => void
+}) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<GoogleMapsMap | null>(null);
+  const [markers, setMarkers] = useState<{ [key: string]: MarkerWithCoords }>({});
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const mapInstanceRef = useRef<GoogleMapsMap | null>(null);
+
+  // Cargar Google Maps
   useEffect(() => {
-    if (!map || !infoWindow) return
+    let isMounted = true;
 
-    // Crear marcador del proyecto
-    const projectPin = new window.google.maps.marker.PinElement({
-      scale: 1.2,
-      background: '#E2C18A',
-      borderColor: '#2B303B',
-      glyphColor: '#2B303B',
-    })
+    const initGoogleMaps = async () => {
+      try {
+        await loadGoogleMaps(apiKey);
+        if (isMounted) {
+          setIsLoaded(true);
+          setError(null);
+        }
+      } catch (err) {
+        console.error('Error cargando Google Maps:', err);
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Error desconocido');
+        }
+      }
+    };
 
-    const projectMarker = new window.google.maps.marker.AdvancedMarkerElement({
-      position: projectLocation,
-      map,
-      title: 'VIRA TRIUNVIRATO',
-      content: projectPin.element,
-      zIndex: 1000,
-    })
-
-    projectMarker.addListener('click', () => {
-      infoWindow.setContent(`
-        <div style="padding: 8px;">
-          <h3 style="margin: 0 0 8px; font-weight: 600;">VIRA TRIUNVIRATO</h3>
-          <p style="margin: 0; font-size: 14px;">${projectLocation.address}</p>
-        </div>
-      `)
-      infoWindow.open(map, projectMarker)
-    })
-
-    setMarkers((prev) => ({ ...prev, proyecto: projectMarker }))
-
-    // Crear marcadores de puntos de interés
-    Object.entries(pointsOfInterest).forEach(([, points], categoryIndex) => {
-      points.forEach((point, pointIndex) => {
-        setTimeout(() => {
-          const pin = new window.google.maps.marker.PinElement({
-            scale: 0.8,
-            background: '#8BA0BD',
-            borderColor: '#FFFFFF',
-            glyphColor: '#FFFFFF',
-          })
-
-          const marker = new window.google.maps.marker.AdvancedMarkerElement({
-            position: { lat: point.lat, lng: point.lng },
-            map,
-            title: point.name,
-            content: pin.element,
-            zIndex: 1,
-          })
-
-          marker.addListener('click', () => {
-            infoWindow.setContent(`
-              <div style="padding: 8px;">
-                <h3 style="margin: 0 0 8px; font-weight: 600;">${point.name}</h3>
-                <p style="margin: 0; font-size: 14px;">${point.address}</p>
-              </div>
-            `)
-            infoWindow.open(map, marker)
-          })
-
-          setMarkers((prev) => ({ ...prev, [point.name]: marker }))
-        }, (categoryIndex * points.length + pointIndex) * 200)
-      })
-    })
-
-    // Ajustar el zoom para mostrar todos los marcadores
-    const bounds = new window.google.maps.LatLngBounds()
-    bounds.extend(projectLocation)
-    Object.values(pointsOfInterest).flat().forEach((point) => {
-      bounds.extend({ lat: point.lat, lng: point.lng })
-    })
-    map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 })
+    initGoogleMaps();
 
     return () => {
-      Object.values(markers).forEach((marker) => {
-        marker.map = null
-      })
-    }
-  }, [map, infoWindow, markers])
+      isMounted = false;
+    };
+  }, [apiKey]);
 
-  // Manejar hover en puntos
+  // Crear el mapa
   useEffect(() => {
-    if (!map || !hoveredPoint || !markers[hoveredPoint]) return
-    
-    const marker = markers[hoveredPoint]
-    map.panTo(marker.position as google.maps.LatLng)
-    
-    // Animar el marcador con CSS
-    if (marker.content instanceof HTMLElement) {
-      marker.content.style.transform = 'scale(1.2)'
-      marker.content.style.transition = 'transform 0.2s ease-in-out'
+    if (!isLoaded || !mapRef.current || mapInstanceRef.current || error) return;
+
+    try {
+      console.log('🗺️ Creando instancia del mapa...');
+      const windowWithGM = window as unknown as WindowWithGoogleMaps;
+      const googleMaps = windowWithGM.google!.maps;
+      
+      const mapInstance = new googleMaps.Map(mapRef.current, {
+        center: projectLocation,
+        zoom: 14,
+        mapTypeId: 'roadmap',
+        styles: [
+          // Estilos personalizados del mapa - puedes cambiarlos
+          {
+            "featureType": "all",
+            "elementType": "geometry",
+            "stylers": [{ "color": "#f5f5f5" }]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [{ "color": "#ffffff" }]
+          },
+          {
+            "featureType": "water",
+            "elementType": "all",
+            "stylers": [{ "color": "#c9c9c9" }]
+          }
+        ],
+        disableDefaultUI: true,
+        zoomControl: true,
+        fullscreenControl: true,
+        gestureHandling: 'greedy'
+      });
+
+      // Marker principal del proyecto
+      const projectMarker = new googleMaps.Marker({
+        position: projectLocation,
+        map: mapInstance,
+        title: "VIRA TRIUNVIRATO",
+        icon: {
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="18" fill="#000000" stroke="#ffffff" stroke-width="3"/>
+            </svg>
+          `),
+          scaledSize: new googleMaps.Size(40, 40),
+          anchor: new googleMaps.Point(20, 20)
+        },
+        zIndex: 1000
+      });
+
+      // InfoWindow personalizada
+      const infoWindow = new googleMaps.InfoWindow({
+        content: `
+          <div style="padding: 12px; text-align: center; font-family: Arial;">
+            <h3 style="margin: 0 0 8px 0; color: #000; font-size: 16px; font-weight: bold;">
+              VIRA TRIUNVIRATO
+            </h3>
+            <p style="margin: 0; color: #888; font-size: 11px; line-height: 1.3;">
+              📍 ${projectLocation.address}
+            </p>
+          </div>
+        `,
+        maxWidth: 280
+      });
+
+      projectMarker.addListener('click', () => {
+        infoWindow.open(mapInstance, projectMarker);
+      });
+
+      // Mostrar InfoWindow automáticamente después de 1 segundo
+      setTimeout(() => {
+        infoWindow.open(mapInstance, projectMarker);
+      }, 1000);
+
+      mapInstanceRef.current = mapInstance;
+      setMap(mapInstance);
+      setMarkers(prev => ({
+        ...prev,
+        ['proyecto-principal']: {
+          ...projectMarker,
+          originalCoords: { lat: projectLocation.lat, lng: projectLocation.lng }
+        }
+      }));
+
+      console.log('✅ Mapa creado exitosamente');
+
+    } catch (err) {
+      console.error('Error creando mapa:', err);
+      setError('Error creando el mapa');
     }
-    
-    const timeout = setTimeout(() => {
-      if (marker.content instanceof HTMLElement) {
-        marker.content.style.transform = 'scale(1)'
-      }
-    }, 1500)
+  }, [isLoaded, error]);
 
-    return () => clearTimeout(timeout)
-  }, [hoveredPoint, markers, map])
+  // Crear markers de puntos de interés
+  useEffect(() => {
+    if (!map || !isLoaded || error) return;
 
-  const categoryLabels: { [key: string]: string } = {
-    gastronomia: 'Gastronomía',
-    servicios: 'Servicios',
-    transporte: 'Transporte',
-    educacion: 'Educación',
+    try {
+      const windowWithGM = window as unknown as WindowWithGoogleMaps;
+      const googleMaps = windowWithGM.google!.maps;
+      const newMarkers: { [key: string]: MarkerWithCoords } = {};
+
+      // Markers de gastronomía
+      pointsOfInterest.gastronomia.forEach(point => {
+        try {
+          const marker = new googleMaps.Marker({
+            position: new googleMaps.LatLng(point.lat, point.lng),
+            map: map,
+            title: point.name,
+            label: {
+              text: '2', // DOHO ZONA es el número 2
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '12px'
+            },
+            icon: {
+              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="16" cy="16" r="14" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+                </svg>
+              `),
+              scaledSize: new googleMaps.Size(32, 32),
+              anchor: new googleMaps.Point(16, 16)
+            }
+          }) as MarkerWithCoords;
+
+          marker.addListener('mouseover', () => onMarkerHover(point.name));
+          marker.addListener('mouseout', () => onMarkerHover(null));
+          marker.originalCoords = { lat: point.lat, lng: point.lng };
+          newMarkers[point.name] = marker;
+        } catch (markerError) {
+          console.error(`Error creando marker para ${point.name}:`, markerError);
+        }
+      });
+
+      // Markers de servicios con números correspondientes
+      const serviceNumbers = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // Números para cada servicio
+      pointsOfInterest.servicios.forEach((point, index) => {
+        try {
+          const marker = new googleMaps.Marker({
+            position: new googleMaps.LatLng(point.lat, point.lng),
+            map: map,
+            title: point.name,
+            label: {
+              text: serviceNumbers[index]?.toString() || (index + 1).toString(),
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '12px'
+            },
+            icon: {
+              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="16" cy="16" r="14" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+                </svg>
+              `),
+              scaledSize: new googleMaps.Size(32, 32),
+              anchor: new googleMaps.Point(16, 16)
+            }
+          }) as MarkerWithCoords;
+
+          marker.addListener('mouseover', () => onMarkerHover(point.name));
+          marker.addListener('mouseout', () => onMarkerHover(null));
+          marker.originalCoords = { lat: point.lat, lng: point.lng };
+          newMarkers[point.name] = marker;
+        } catch (markerError) {
+          console.error(`Error creando marker para ${point.name}:`, markerError);
+        }
+      });
+
+      setMarkers(newMarkers);
+      console.log('✅ Markers creados:', Object.keys(newMarkers).length);
+    } catch (err) {
+      console.error('Error general creando markers:', err);
+    }
+  }, [map, isLoaded, error]);
+
+  if (error) {
+    return (
+      <div className="w-full h-full bg-red-50 flex items-center justify-center">
+        <div className="text-center p-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.232 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <h3 className="font-bold text-lg text-red-800 mb-2">
+            Error cargando el mapa
+          </h3>
+          <p className="text-red-600 text-sm mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+          >
+            Recargar página
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 h-[600px] lg:h-[700px]">
-      <ScrollArea className="rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="p-4 space-y-2">
-          {Object.entries(pointsOfInterest).map(([category, points]) => (
-            <div key={category} className="space-y-2">
-              <h3 className="font-medium">{categoryLabels[category]}</h3>
-              {points.map((point) => (
-                <Button
-                  key={point.name}
-                  variant="ghost"
-                  className={cn(
-                    'w-full justify-start text-left font-normal',
-                    hoveredPoint === point.name && 'bg-accent'
-                  )}
-                  onMouseEnter={() => setHoveredPoint(point.name)}
-                  onMouseLeave={() => setHoveredPoint(undefined)}
-                  onClick={() => {
-                    if (!infoWindow || !markers[point.name]) return
-                    infoWindow.setContent(`
-                      <div style="padding: 8px;">
-                        <h3 style="margin: 0 0 8px; font-weight: 600;">${point.name}</h3>
-                        <p style="margin: 0; font-size: 14px;">${point.address}</p>
-                      </div>
-                    `)
-                    infoWindow.open(map, markers[point.name])
-                  }}
-                >
-                  {point.name}
-                </Button>
-              ))}
-            </div>
-          ))}
+  if (!isLoaded) {
+    return (
+      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <h3 className="font-medium text-lg text-gray-800 mb-2">
+            Cargando mapa...
+          </h3>
         </div>
-      </ScrollArea>
-      <div ref={ref} className="h-full rounded-lg" />
-    </div>
-  )
+      </div>
+    );
+  }
+
+  return <div ref={mapRef} className="w-full h-full" />;
 }
 
-const MapWrapper = () => {
+export default function Map() {
+  const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
+  
+  // Obtener API key de variables de entorno
+  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "TU_API_KEY_AQUI";
+
+  // Lista numerada de puntos de interés para la leyenda
+  const legendItems = [
+    { id: 1, name: "Estación Los Incas – Línea B SUBTE" },
+    { id: 2, name: "DOHO ZONA" },
+    { id: 3, name: "Supermercado Jumbo" },
+    { id: 4, name: "Sport Club" },
+    { id: 5, name: "Centro Comercial Villa Urquiza" },
+    { id: 6, name: "Club Arquitectura" },
+    { id: 7, name: "Estación de Tren FFCC Mitre" },
+    { id: 8, name: "Facultad de Agronomía" },
+    { id: 9, name: "Sede UBA" },
+    { id: 10, name: "Estación de Tren FFCC Urquiza" },
+    { id: 11, name: "Diagnóstico Maipú" },
+    { id: 12, name: "Centro Médico Adventista" }
+  ];
+
   return (
-    <Wrapper apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-      <Map
-        center={projectLocation}
-        zoom={15}
+    <div className="w-full h-full relative">
+      {/* Mapa */}
+      <GoogleMapComponent 
+        apiKey={GOOGLE_MAPS_API_KEY} 
+        hoveredPoint={hoveredPoint}
+        onMarkerHover={setHoveredPoint}
       />
-    </Wrapper>
-  )
+      
+      {/* Leyenda lateral */}
+      <div className="absolute top-6 left-6 w-80 md:w-96 max-h-[calc(100%-3rem)] overflow-y-auto z-10">
+        <div 
+          className="text-white p-6 rounded-lg shadow-xl"
+          style={{
+            background: 'rgba(107, 114, 128, 0.85)',
+            backdropFilter: 'blur(15px)',
+            WebkitBackdropFilter: 'blur(15px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          <h3 className="text-xl font-bold mb-3 uppercase tracking-wide text-white">
+            PUNTOS DE INTERÉS
+          </h3>
+          <p className="text-sm text-gray-200 mb-6 leading-tight">
+            Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
+          </p>
+          
+          <div className="space-y-0.5">
+            {legendItems.map((item) => (
+              <div 
+                key={item.id}
+                className={`flex items-start space-x-3 cursor-pointer transition-all duration-200 p-1.5 rounded ${
+                  hoveredPoint === item.name 
+                    ? 'bg-white text-black font-medium transform scale-105' 
+                    : 'hover:bg-gray-500 hover:bg-opacity-50'
+                }`}
+                onMouseEnter={() => setHoveredPoint(item.name)}
+                onMouseLeave={() => setHoveredPoint(null)}
+              >
+                <span className={`font-bold text-sm min-w-[2rem] mt-0.5 ${
+                  hoveredPoint === item.name ? 'text-black' : 'text-white'
+                }`}>
+                  {item.id.toString().padStart(2, '0')}
+                </span>
+                <span className={`text-sm font-normal leading-relaxed ${
+                  hoveredPoint === item.name ? 'text-black' : 'text-white'
+                }`}>
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-export default MapWrapper
