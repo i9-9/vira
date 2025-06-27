@@ -80,8 +80,8 @@ export function ContactForm() {
                 <button
                   type="submit"
                   disabled={submitStatus === 'loading'}
-                  className={`bg-transparent border-0 border-b border-[#444] text-[#222] text-lg font-light py-2 px-0 hover:text-black hover:border-black transition-all w-full text-left disabled:opacity-50 disabled:cursor-not-allowed`}
-                  style={{ fontFamily: 'Beatrice, Arial, sans-serif' }}
+                  className={`bg-transparent border border-[#444] text-[#222] text-lg font-light py-2 px-4 hover:text-black hover:border-black transition-all disabled:opacity-50 disabled:cursor-not-allowed text-center md:text-left w-full`}
+                  style={{ fontFamily: 'Beatrice, Arial, sans-serif', borderRadius: '0' }}
                 >
                   {submitStatus === 'loading' ? 'Enviando...' : 'Enviar'}
                 </button>
@@ -116,4 +116,4 @@ export function ContactForm() {
       </div>
     </section>
   )
-} 
+}
