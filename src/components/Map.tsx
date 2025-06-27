@@ -282,7 +282,6 @@ function GoogleMapComponent({ apiKey, onMarkerHover }: {
         ],
         disableDefaultUI: true,
         zoomControl: true,
-        fullscreenControl: true,
         gestureHandling: 'greedy'
       });
 
@@ -467,7 +466,6 @@ function GoogleMapComponent({ apiKey, onMarkerHover }: {
 
 export default function Map() {
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
-  const [showLegend, setShowLegend] = useState(false);
   
   // Obtener API key de variables de entorno
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "TU_API_KEY_AQUI";
@@ -496,76 +494,6 @@ export default function Map() {
           apiKey={GOOGLE_MAPS_API_KEY} 
           onMarkerHover={setHoveredPoint}
         />
-        
-        {/* Botón para mostrar leyenda en mobile */}
-        <button
-          onClick={() => setShowLegend(!showLegend)}
-          className="lg:hidden absolute top-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg z-20 hover:bg-gray-700 transition-colors"
-        >
-          <svg 
-            className={`w-6 h-6 transition-transform ${showLegend ? 'rotate-45' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-        </button>
-
-        {/* Leyenda flotante para mobile */}
-        {showLegend && (
-          <div className="lg:hidden absolute inset-0 bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
-            <div 
-              className="bg-gray-800 text-white p-6 rounded-lg shadow-xl max-h-full overflow-y-auto w-full max-w-sm"
-              style={{
-                backdropFilter: 'blur(15px)',
-                WebkitBackdropFilter: 'blur(15px)',
-              }}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold uppercase tracking-wide">
-                  PUNTOS DE INTERÉS
-                </h3>
-                <button
-                  onClick={() => setShowLegend(false)}
-                  className="text-white hover:text-gray-300 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <p className="text-sm text-gray-200 mb-4 leading-tight">
-                Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
-              </p>
-              
-              <div className="space-y-1">
-                {legendItems.map((item) => (
-                  <div 
-                    key={item.id}
-                    className={`flex items-start space-x-3 p-2 rounded transition-all duration-200 ${
-                      hoveredPoint === item.name 
-                        ? 'bg-white text-black font-medium' 
-                        : 'hover:bg-gray-700'
-                    }`}
-                  >
-                    <span className={`font-bold text-sm min-w-[2rem] ${
-                      hoveredPoint === item.name ? 'text-black' : 'text-white'
-                    }`}>
-                      {item.id.toString().padStart(2, '0')}
-                    </span>
-                    <span className={`text-sm leading-relaxed ${
-                      hoveredPoint === item.name ? 'text-black' : 'text-white'
-                    }`}>
-                      {item.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Leyenda fija para desktop */}
         <div className="hidden lg:block absolute top-6 left-6 w-80 xl:w-96 max-h-[calc(100%-3rem)] overflow-y-auto z-10">
@@ -614,32 +542,36 @@ export default function Map() {
         </div>
       </div>
 
-      {/* Panel de leyenda para mobile (debajo del mapa) */}
-      <div className="lg:hidden bg-gray-50 p-4">
-        <div className="text-center">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">
-            PUNTOS DE INTERÉS CERCANOS
-          </h4>
-          <p className="text-xs text-gray-600 mb-3">
-            Toca el botón + en el mapa para ver la lista completa
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {legendItems.slice(0, 6).map((item) => (
-              <div key={item.id} className="flex items-center space-x-2 bg-white p-2 rounded">
-                <span className="font-bold text-gray-800 min-w-[1.5rem]">
-                  {item.id.toString().padStart(2, '0')}
-                </span>
-                <span className="text-gray-600 truncate">
-                  {item.name}
-                </span>
-              </div>
-            ))}
-          </div>
-          {legendItems.length > 6 && (
-            <p className="text-xs text-gray-500 mt-2">
-              +{legendItems.length - 6} puntos más
-            </p>
-          )}
+      {/* Lista completa para mobile */}
+      <div className="lg:hidden bg-gray-50 p-4 max-h-96 overflow-y-auto">
+        <h4 className="text-lg font-bold text-gray-800 mb-4 text-center uppercase tracking-wide">
+          PUNTOS DE INTERÉS
+        </h4>
+        <p className="text-sm text-gray-600 mb-4 text-center leading-tight">
+          Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
+        </p>
+        <div className="space-y-2">
+          {legendItems.map((item) => (
+            <div 
+              key={item.id} 
+              className={`flex items-center space-x-3 p-4 rounded-lg transition-all duration-200 ${
+                hoveredPoint === item.name 
+                  ? 'bg-gray-800 text-white font-medium shadow-lg' 
+                  : 'bg-white hover:bg-gray-100 border border-gray-200 shadow-sm'
+              }`}
+            >
+              <span className={`font-bold text-base min-w-[2.5rem] text-center ${
+                hoveredPoint === item.name ? 'text-white' : 'text-gray-800'
+              }`}>
+                {item.id.toString().padStart(2, '0')}
+              </span>
+              <span className={`text-base leading-relaxed flex-1 ${
+                hoveredPoint === item.name ? 'text-white' : 'text-gray-700'
+              }`}>
+                {item.name}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

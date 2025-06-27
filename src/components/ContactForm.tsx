@@ -52,31 +52,31 @@ export function ContactForm() {
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 w-full">
             <div className="flex flex-col md:flex-row items-end gap-8 w-full">
-              <div className="flex-1 flex flex-col">
+              <div className="w-full md:flex-1 flex flex-col">
                 <input
                   {...register("nombre")}
                   type="text"
                   placeholder="Nombre y Apellido*"
-                  className={`bg-transparent border-0 border-b ${errors.nombre ? 'border-red-500' : 'border-[#444]'} focus:outline-none focus:border-black text-lg text-[#222] py-2 font-light placeholder:text-[#222] placeholder:font-normal`}
+                  className={`bg-transparent border-0 border-b ${errors.nombre ? 'border-red-500' : 'border-[#444]'} focus:outline-none focus:border-black text-lg text-[#222] py-2 font-light placeholder:text-[#222] placeholder:font-normal w-full`}
                   autoComplete="name"
                 />
                 {errors.nombre && (
                   <span className="text-red-500 text-sm mt-1">{errors.nombre.message}</span>
                 )}
               </div>
-              <div className="flex-1 flex flex-col">
+              <div className="w-full md:flex-1 flex flex-col">
                 <input
                   {...register("email")}
                   type="email"
                   placeholder="Email*"
-                  className={`bg-transparent border-0 border-b ${errors.email ? 'border-red-500' : 'border-[#444]'} focus:outline-none focus:border-black text-lg text-[#222] py-2 font-light placeholder:text-[#222] placeholder:font-normal`}
+                  className={`bg-transparent border-0 border-b ${errors.email ? 'border-red-500' : 'border-[#444]'} focus:outline-none focus:border-black text-lg text-[#222] py-2 font-light placeholder:text-[#222] placeholder:font-normal w-full`}
                   autoComplete="email"
                 />
                 {errors.email && (
                   <span className="text-red-500 text-sm mt-1">{errors.email.message}</span>
                 )}
               </div>
-              <div className="flex flex-col min-w-[120px] w-1/4">
+              <div className="w-full md:min-w-[120px] md:w-1/4 flex flex-col">
                 <button
                   type="submit"
                   disabled={submitStatus === 'loading'}
