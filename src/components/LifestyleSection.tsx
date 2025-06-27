@@ -40,14 +40,15 @@ const ChevronRight = ({ className = "" }) => (
 )
 
 export function LifestyleSection() {
-  const scrollRef = useRef(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
 
   // Función para verificar la posición del scroll
   const checkScrollPosition = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+    const scrollElement = scrollRef.current
+    if (scrollElement) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollElement
       
       console.log('Scroll info:', { scrollLeft, scrollWidth, clientWidth }) // Debug
       
@@ -91,9 +92,10 @@ export function LifestyleSection() {
   }, [])
 
   const scrollLeft = () => {
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.offsetWidth * 0.8
-      scrollRef.current.scrollBy({
+    const scrollElement = scrollRef.current
+    if (scrollElement) {
+      const scrollAmount = scrollElement.offsetWidth * 0.8
+      scrollElement.scrollBy({
         left: -scrollAmount,
         behavior: 'smooth'
       })
@@ -101,9 +103,10 @@ export function LifestyleSection() {
   }
 
   const scrollRight = () => {
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.offsetWidth * 0.8
-      scrollRef.current.scrollBy({
+    const scrollElement = scrollRef.current
+    if (scrollElement) {
+      const scrollAmount = scrollElement.offsetWidth * 0.8
+      scrollElement.scrollBy({
         left: scrollAmount,
         behavior: 'smooth'
       })
