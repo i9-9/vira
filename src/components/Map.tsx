@@ -154,14 +154,12 @@ function loadGoogleMaps(apiKey: string): Promise<void> {
   });
 }
 
-function GoogleMapComponent({ apiKey, hoveredPoint, onMarkerHover }: { 
+function GoogleMapComponent({ apiKey, onMarkerHover }: { 
   apiKey: string,
-  hoveredPoint: string | null,
   onMarkerHover: (pointName: string | null) => void
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<GoogleMapsMap | null>(null);
-  const [markers, setMarkers] = useState<{ [key: string]: MarkerWithCoords }>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mapInstanceRef = useRef<GoogleMapsMap | null>(null);
@@ -272,13 +270,6 @@ function GoogleMapComponent({ apiKey, hoveredPoint, onMarkerHover }: {
 
       mapInstanceRef.current = mapInstance;
       setMap(mapInstance);
-      setMarkers(prev => ({
-        ...prev,
-        ['proyecto-principal']: {
-          ...projectMarker,
-          originalCoords: { lat: projectLocation.lat, lng: projectLocation.lng }
-        }
-      }));
 
       console.log('✅ Mapa creado exitosamente');
 
@@ -364,12 +355,11 @@ function GoogleMapComponent({ apiKey, hoveredPoint, onMarkerHover }: {
         }
       });
 
-      setMarkers(newMarkers);
       console.log('✅ Markers creados:', Object.keys(newMarkers).length);
     } catch (err) {
       console.error('Error general creando markers:', err);
     }
-  }, [map, isLoaded, error]);
+  }, [map, isLoaded, error, onMarkerHover]);
 
   if (error) {
     return (
@@ -443,7 +433,6 @@ export default function Map() {
       {/* Mapa */}
       <GoogleMapComponent 
         apiKey={GOOGLE_MAPS_API_KEY} 
-        hoveredPoint={hoveredPoint}
         onMarkerHover={setHoveredPoint}
       />
       
