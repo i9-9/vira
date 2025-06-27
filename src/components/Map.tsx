@@ -263,7 +263,7 @@ function GoogleMapComponent({ apiKey, onMarkerHover }: {
         zoom: 14,
         mapTypeId: 'roadmap',
         styles: [
-          // Estilos personalizados del mapa - puedes cambiarlos
+          // Estilos personalizados del mapa
           {
             "featureType": "all",
             "elementType": "geometry",
@@ -467,6 +467,7 @@ function GoogleMapComponent({ apiKey, onMarkerHover }: {
 
 export default function Map() {
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
+  const [showLegend, setShowLegend] = useState(false);
   
   // Obtener API key de variables de entorno
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "TU_API_KEY_AQUI";
@@ -488,56 +489,157 @@ export default function Map() {
   ];
 
   return (
-    <div className="w-full h-full relative">
-      {/* Mapa */}
-      <GoogleMapComponent 
-        apiKey={GOOGLE_MAPS_API_KEY} 
-        onMarkerHover={setHoveredPoint}
-      />
-      
-      {/* Leyenda lateral */}
-      <div className="absolute top-6 left-6 w-80 md:w-96 max-h-[calc(100%-3rem)] overflow-y-auto z-10">
-        <div 
-          className="text-white p-6 rounded-lg shadow-xl"
-          style={{
-            background: 'rgba(107, 114, 128, 0.85)',
-            backdropFilter: 'blur(15px)',
-            WebkitBackdropFilter: 'blur(15px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}
+    <div className="w-full h-full flex flex-col lg:flex-row">
+      {/* Mapa - Ocupa toda la pantalla en mobile, lado derecho en desktop */}
+      <div className="relative flex-1 h-64 lg:h-full">
+        <GoogleMapComponent 
+          apiKey={GOOGLE_MAPS_API_KEY} 
+          onMarkerHover={setHoveredPoint}
+        />
+        
+        {/* Botón para mostrar leyenda en mobile */}
+        <button
+          onClick={() => setShowLegend(!showLegend)}
+          className="lg:hidden absolute top-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg z-20 hover:bg-gray-700 transition-colors"
         >
-          <h3 className="text-xl font-bold mb-3 uppercase tracking-wide text-white">
-            PUNTOS DE INTERÉS
-          </h3>
-          <p className="text-sm text-gray-200 mb-6 leading-tight">
-            Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
+          <svg 
+            className={`w-6 h-6 transition-transform ${showLegend ? 'rotate-45' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        </button>
+
+        {/* Leyenda flotante para mobile */}
+        {showLegend && (
+          <div className="lg:hidden absolute inset-0 bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
+            <div 
+              className="bg-gray-800 text-white p-6 rounded-lg shadow-xl max-h-full overflow-y-auto w-full max-w-sm"
+              style={{
+                backdropFilter: 'blur(15px)',
+                WebkitBackdropFilter: 'blur(15px)',
+              }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold uppercase tracking-wide">
+                  PUNTOS DE INTERÉS
+                </h3>
+                <button
+                  onClick={() => setShowLegend(false)}
+                  className="text-white hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <p className="text-sm text-gray-200 mb-4 leading-tight">
+                Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
+              </p>
+              
+              <div className="space-y-1">
+                {legendItems.map((item) => (
+                  <div 
+                    key={item.id}
+                    className={`flex items-start space-x-3 p-2 rounded transition-all duration-200 ${
+                      hoveredPoint === item.name 
+                        ? 'bg-white text-black font-medium' 
+                        : 'hover:bg-gray-700'
+                    }`}
+                  >
+                    <span className={`font-bold text-sm min-w-[2rem] ${
+                      hoveredPoint === item.name ? 'text-black' : 'text-white'
+                    }`}>
+                      {item.id.toString().padStart(2, '0')}
+                    </span>
+                    <span className={`text-sm leading-relaxed ${
+                      hoveredPoint === item.name ? 'text-black' : 'text-white'
+                    }`}>
+                      {item.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Leyenda fija para desktop */}
+        <div className="hidden lg:block absolute top-6 left-6 w-80 xl:w-96 max-h-[calc(100%-3rem)] overflow-y-auto z-10">
+          <div 
+            className="text-white p-6 rounded-lg shadow-xl"
+            style={{
+              background: 'rgba(107, 114, 128, 0.85)',
+              backdropFilter: 'blur(15px)',
+              WebkitBackdropFilter: 'blur(15px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            <h3 className="text-xl font-bold mb-3 uppercase tracking-wide text-white">
+              PUNTOS DE INTERÉS
+            </h3>
+            <p className="text-sm text-gray-200 mb-6 leading-tight">
+              Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
+            </p>
+            
+            <div className="space-y-0.5">
+              {legendItems.map((item) => (
+                <div 
+                  key={item.id}
+                  className={`flex items-start space-x-3 cursor-pointer transition-all duration-200 p-1.5 rounded ${
+                    hoveredPoint === item.name 
+                      ? 'bg-white text-black font-medium transform scale-105' 
+                      : 'hover:bg-gray-500 hover:bg-opacity-50'
+                  }`}
+                  onMouseEnter={() => setHoveredPoint(item.name)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                >
+                  <span className={`font-bold text-sm min-w-[2rem] mt-0.5 ${
+                    hoveredPoint === item.name ? 'text-black' : 'text-white'
+                  }`}>
+                    {item.id.toString().padStart(2, '0')}
+                  </span>
+                  <span className={`text-sm font-normal leading-relaxed ${
+                    hoveredPoint === item.name ? 'text-black' : 'text-white'
+                  }`}>
+                    {item.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Panel de leyenda para mobile (debajo del mapa) */}
+      <div className="lg:hidden bg-gray-50 p-4">
+        <div className="text-center">
+          <h4 className="text-sm font-semibold text-gray-700 mb-2">
+            PUNTOS DE INTERÉS CERCANOS
+          </h4>
+          <p className="text-xs text-gray-600 mb-3">
+            Toca el botón + en el mapa para ver la lista completa
           </p>
-          
-          <div className="space-y-0.5">
-            {legendItems.map((item) => (
-              <div 
-                key={item.id}
-                className={`flex items-start space-x-3 cursor-pointer transition-all duration-200 p-1.5 rounded ${
-                  hoveredPoint === item.name 
-                    ? 'bg-white text-black font-medium transform scale-105' 
-                    : 'hover:bg-gray-500 hover:bg-opacity-50'
-                }`}
-                onMouseEnter={() => setHoveredPoint(item.name)}
-                onMouseLeave={() => setHoveredPoint(null)}
-              >
-                <span className={`font-bold text-sm min-w-[2rem] mt-0.5 ${
-                  hoveredPoint === item.name ? 'text-black' : 'text-white'
-                }`}>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {legendItems.slice(0, 6).map((item) => (
+              <div key={item.id} className="flex items-center space-x-2 bg-white p-2 rounded">
+                <span className="font-bold text-gray-800 min-w-[1.5rem]">
                   {item.id.toString().padStart(2, '0')}
                 </span>
-                <span className={`text-sm font-normal leading-relaxed ${
-                  hoveredPoint === item.name ? 'text-black' : 'text-white'
-                }`}>
+                <span className="text-gray-600 truncate">
                   {item.name}
                 </span>
               </div>
             ))}
           </div>
+          {legendItems.length > 6 && (
+            <p className="text-xs text-gray-500 mt-2">
+              +{legendItems.length - 6} puntos más
+            </p>
+          )}
         </div>
       </div>
     </div>
