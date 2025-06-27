@@ -60,24 +60,83 @@ const projectLocation = {
   address: "Av. Triunvirato, Villa Urquiza, CABA"
 };
 
-// Puntos de interés cercanos a Vira Triunvirato
+// Puntos de interés cercanos a Vira Triunvirato con coordenadas precisas
 const pointsOfInterest: PointsData = {
   gastronomia: [
-    // Basado en el mapa proporcionado - agregar coordenadas aproximadas
-    { name: "DOHO ZONA", address: "Av. Álvarez Thomas", lat: -34.5795, lng: -58.4725 },
+    {
+      name: "DOHO ZONA",
+      address: "Av. Álvarez Thomas",
+      lat: -34.57521265719602,
+      lng: -58.47279210321759
+    }
   ],
   servicios: [
-    { name: "Estación Los Incas - Línea B SUBE", address: "Los Incas", lat: -34.5820, lng: -58.4740 },
-    { name: "Supermercado Jumbo", address: "Av. Triunvirato", lat: -34.5825, lng: -58.4735 },
-    { name: "Sport Club", address: "Cerca de Av. Triunvirato", lat: -34.5830, lng: -58.4730 },
-    { name: "Centro Comercial Villa Urquiza", address: "Villa Urquiza", lat: -34.5805, lng: -58.4720 },
-    { name: "Club Arquitectura", address: "Villa Urquiza", lat: -34.5790, lng: -58.4710 },
-    { name: "Estación de Tren FFCC Mitre", address: "FFCC Mitre", lat: -34.5780, lng: -58.4695 },
-    { name: "Facultad de Agronomía", address: "UBA", lat: -34.5775, lng: -58.4800 },
-    { name: "Sede UBA", address: "Universidad de Buenos Aires", lat: -34.5850, lng: -58.4750 },
-    { name: "Estación de Tren FFCC Urquiza", address: "FFCC Urquiza", lat: -34.5855, lng: -58.4780 },
-    { name: "Diagnóstico Maipú", address: "Centro médico", lat: -34.5870, lng: -58.4820 },
-    { name: "Centro Médico Adventista", address: "Atención médica", lat: -34.5760, lng: -58.4720 }
+    {
+      name: "Estación Los Incas - Línea B SUBE",
+      address: "Los Incas",
+      lat: -34.58135614132666,
+      lng: -58.47386903205338
+    },
+    {
+      name: "Supermercado Jumbo",
+      address: "Av. Triunvirato",
+      lat: -34.58324404304368,
+      lng: -58.465001819086474
+    },
+    {
+      name: "Sport Club",
+      address: "Cerca de Av. Triunvirato",
+      lat: -34.58352312528429,
+      lng: -58.46539190558546
+    },
+    {
+      name: "Centro Comercial Villa Urquiza",
+      address: "Villa Urquiza",
+      lat: -34.57783157172449,
+      lng: -58.48459957360854
+    },
+    {
+      name: "Club Arquitectura",
+      address: "Villa Urquiza",
+      lat: -34.58922862471361,
+      lng: -58.4840340775306
+    },
+    {
+      name: "Estación de Tren FFCC Mitre",
+      address: "FFCC Mitre",
+      lat: -34.57457334231884,
+      lng: -58.48701869839317
+    },
+    {
+      name: "Facultad de Agronomía",
+      address: "UBA",
+      lat: -34.59065218892187,
+      lng: -58.48248647009202
+    },
+    {
+      name: "Sede UBA",
+      address: "Universidad de Buenos Aires",
+      lat: -34.590506428375875,
+      lng: -58.48109360296291
+    },
+    {
+      name: "Estación de Tren FFCC Urquiza",
+      address: "FFCC Urquiza",
+      lat: -34.58647600245906,
+      lng: -58.454923091332
+    },
+    {
+      name: "Diagnóstico Maipú",
+      address: "Centro médico",
+      lat: -34.57978536757091,
+      lng: -58.486118680007074
+    },
+    {
+      name: "Centro Médico Adventista",
+      address: "Atención médica",
+      lat: -34.57433123073305,
+      lng: -58.46817679395558
+    }
   ]
 };
 
