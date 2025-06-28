@@ -486,10 +486,14 @@ export default function Map() {
     { id: 12, name: "Centro Médico Adventista" }
   ];
 
+  // Dividir items en dos columnas para mobile
+  const firstColumn = legendItems.slice(0, 6);
+  const secondColumn = legendItems.slice(6, 12);
+
   return (
     <div className="w-full h-full flex flex-col lg:flex-row">
-      {/* Mapa - Ocupa toda la pantalla en mobile, lado derecho en desktop */}
-      <div className="relative flex-1 h-64 lg:h-full">
+      {/* Mapa - Ocupa la mayor parte de la altura disponible */}
+      <div className="relative flex-1 min-h-[400px] lg:h-full">
         <GoogleMapComponent 
           apiKey={GOOGLE_MAPS_API_KEY} 
           onMarkerHover={setHoveredPoint}
@@ -542,36 +546,66 @@ export default function Map() {
         </div>
       </div>
 
-      {/* Lista completa para mobile */}
-      <div className="lg:hidden bg-gray-50 p-4 max-h-96 overflow-y-auto">
-        <h4 className="text-lg font-bold text-gray-800 mb-4 text-center uppercase tracking-wide">
+      {/* Lista en dos columnas para mobile */}
+      <div className="lg:hidden bg-gray-50 p-4">
+        <h4 className="text-lg font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
           PUNTOS DE INTERÉS
         </h4>
         <p className="text-sm text-gray-600 mb-4 text-center leading-tight">
           Amplia variedad de opciones gastronómicas, escuelas, servicios médicos, bancos, locales comerciales y espacios verdes.
         </p>
-        <div className="space-y-2">
-          {legendItems.map((item) => (
-            <div 
-              key={item.id} 
-              className={`flex items-center space-x-3 p-4 rounded-lg transition-all duration-200 ${
-                hoveredPoint === item.name 
-                  ? 'bg-gray-800 text-white font-medium shadow-lg' 
-                  : 'bg-white hover:bg-gray-100 border border-gray-200 shadow-sm'
-              }`}
-            >
-              <span className={`font-bold text-base min-w-[2.5rem] text-center ${
-                hoveredPoint === item.name ? 'text-white' : 'text-gray-800'
-              }`}>
-                {item.id.toString().padStart(2, '0')}
-              </span>
-              <span className={`text-base leading-relaxed flex-1 ${
-                hoveredPoint === item.name ? 'text-white' : 'text-gray-700'
-              }`}>
-                {item.name}
-              </span>
-            </div>
-          ))}
+        
+        {/* Grid de dos columnas */}
+        <div className="grid grid-cols-2 gap-2">
+          {/* Primera columna */}
+          <div className="space-y-2">
+            {firstColumn.map((item) => (
+              <div 
+                key={item.id} 
+                className={`flex items-start space-x-2 p-3 rounded-lg transition-all duration-200 text-sm ${
+                  hoveredPoint === item.name 
+                    ? 'bg-gray-800 text-white font-medium shadow-lg' 
+                    : 'bg-white hover:bg-gray-100 border border-gray-200 shadow-sm'
+                }`}
+              >
+                <span className={`font-bold text-xs min-w-[1.5rem] mt-0.5 ${
+                  hoveredPoint === item.name ? 'text-white' : 'text-gray-800'
+                }`}>
+                  {item.id.toString().padStart(2, '0')}
+                </span>
+                <span className={`text-xs leading-relaxed flex-1 ${
+                  hoveredPoint === item.name ? 'text-white' : 'text-gray-700'
+                }`}>
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Segunda columna */}
+          <div className="space-y-2">
+            {secondColumn.map((item) => (
+              <div 
+                key={item.id} 
+                className={`flex items-start space-x-2 p-3 rounded-lg transition-all duration-200 text-sm ${
+                  hoveredPoint === item.name 
+                    ? 'bg-gray-800 text-white font-medium shadow-lg' 
+                    : 'bg-white hover:bg-gray-100 border border-gray-200 shadow-sm'
+                }`}
+              >
+                <span className={`font-bold text-xs min-w-[1.5rem] mt-0.5 ${
+                  hoveredPoint === item.name ? 'text-white' : 'text-gray-800'
+                }`}>
+                  {item.id.toString().padStart(2, '0')}
+                </span>
+                <span className={`text-xs leading-relaxed flex-1 ${
+                  hoveredPoint === item.name ? 'text-white' : 'text-gray-700'
+                }`}>
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

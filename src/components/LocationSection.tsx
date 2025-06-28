@@ -15,7 +15,7 @@ export function LocationSection() {
         </div>
       </div>
       {/* Map */}
-      <div className="w-full h-[580px] md:h-[680px]">
+      <div className="w-full h-[1200px] md:h-[680px]">
         <Map />
       </div>
     </section>
