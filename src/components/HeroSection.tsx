@@ -13,7 +13,7 @@ export function HeroSection() {
         {/* Imagen izquierda */}
         <div className="flex-1 min-h-[240px] h-full relative">
           <Image
-            src="/images/gallery/3C_FORMA_TRIUNVIRATO_UNIDAD FUNC_F.jpg"
+            src="/images/hero/2_interior.jpg"
             alt="Interior de unidad funcional"
             fill
             className="object-cover"
@@ -24,7 +24,7 @@ export function HeroSection() {
         {/* Imagen derecha */}
         <div className="flex-1 min-h-[240px] h-full relative overflow-hidden">
           <Image
-            src="/images/gallery/3C_FORMA_TRIUNVIRATO_PILETA_F.jpg"
+            src="/images/hero/2_pileta.jpg"
             alt="Vista de la pileta y espacios comunes"
             fill
             className="object-cover object-[0%_100%]"

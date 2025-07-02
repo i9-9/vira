@@ -4,21 +4,26 @@ import Image from "next/image"
 import React, { useRef, useState, useEffect } from "react"
 
 const images = [
+  // Primera galería (fachadas y exteriores)
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADA ACCESO_F.jpg",
+    src: "/images/gallery/1_fachada.jpg",
     alt: "Fachada principal y acceso al edificio"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADA TRIUNVIRATO_F.jpg",
+    src: "/images/gallery/1_fachada2.jpg",
     alt: "Vista de la fachada sobre Av. Triunvirato"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_FACHADAINCAS_F.jpg",
+    src: "/images/gallery/1_fachada3.jpg",
     alt: "Vista de la fachada sobre calle Los Incas"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_UNIDAD FUNC_F.jpg",
-    alt: "Interior de unidad funcional modelo"
+    src: "/images/gallery/1_fachada4.jpg",
+    alt: "Hall de entrada principal"
+  },
+  {
+    src: "/images/gallery/1_a_patio.jpg",
+    alt: "Patio interno y espacios comunes"
   }
 ]
 

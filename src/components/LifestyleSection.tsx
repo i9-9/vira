@@ -4,25 +4,26 @@ import Image from "next/image"
 import React, { useRef, useState, useEffect } from "react"
 
 const images = [
+  // Primera galería (fachadas y exteriores)
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_PATIOINTERNO_F.jpg",
-    alt: "Patio interno con vegetación y espacios de encuentro"
+    src: "/images/gallery/1_a_patio.jpg",
+    alt: "Patio interno y espacios comunes"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_HALL_F.jpg",
-    alt: "Hall de entrada con diseño moderno"
+    src: "/images/gallery/1_fachada.jpg",
+    alt: "Fachada principal y acceso al edificio"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_INT GYM_F01.jpg",
-    alt: "Gimnasio equipado con vista al exterior"
+    src: "/images/gallery/1_fachada2.jpg",
+    alt: "Vista de la fachada sobre Av. Triunvirato"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_SUM PARRILLA_F.jpg",
-    alt: "SUM con parrilla y espacio de entretenimiento"
+    src: "/images/gallery/1_fachada3.jpg",
+    alt: "Vista de la fachada sobre calle Los Incas"
   },
   {
-    src: "/images/gallery/3C_FORMA_TRIUNVIRATO_PILETA_F.jpg",
-    alt: "Pileta con solarium y áreas de descanso"
+    src: "/images/gallery/1_fachada4.jpg",
+    alt: "Hall de entrada principal"
   }
 ]
 
