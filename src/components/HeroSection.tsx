@@ -1,8 +1,13 @@
 "use client"
 
 import Image from "next/image"
+import type { ContentfulAssets } from "@/lib/contentful-client"
 
-export function HeroSection() {
+interface HeroSectionProps {
+  contentfulAssets: ContentfulAssets | null
+}
+
+export function HeroSection({ contentfulAssets }: HeroSectionProps) {
   return (
     <section
       id="inicio"
@@ -13,7 +18,7 @@ export function HeroSection() {
         {/* Imagen izquierda */}
         <div className="flex-1 min-h-[240px] h-full relative">
           <Image
-            src="/images/hero/2_interior.jpg"
+            src={contentfulAssets?.heroImages?.left || '/images/hero/2_interior.jpg'}
             alt="Interior de unidad funcional"
             fill
             className="object-cover"
@@ -24,7 +29,7 @@ export function HeroSection() {
         {/* Imagen derecha */}
         <div className="flex-1 min-h-[240px] h-full relative overflow-hidden">
           <Image
-            src="/images/hero/2_pileta.jpg"
+            src={contentfulAssets?.heroImages?.right || '/images/hero/2_pileta.jpg'}
             alt="Vista de la pileta y espacios comunes"
             fill
             className="object-cover object-[0%_100%]"

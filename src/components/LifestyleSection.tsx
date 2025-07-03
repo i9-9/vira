@@ -2,9 +2,10 @@
 
 import Image from "next/image"
 import React, { useRef, useState, useEffect } from "react"
+import type { ContentfulAssets } from "@/lib/contentful-client"
 
-const images = [
-  // Primera galería (fachadas y exteriores)
+// Fallback images para cuando no hay datos de Contentful
+const fallbackImages = [
   {
     src: "/images/gallery/1_a_patio.jpg",
     alt: "Patio interno y espacios comunes"
@@ -27,6 +28,10 @@ const images = [
   }
 ]
 
+interface LifestyleSectionProps {
+  contentfulAssets: ContentfulAssets | null
+}
+
 // Componente para las flechas
 const ChevronLeft = ({ className = "" }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,18 +45,33 @@ const ChevronRight = ({ className = "" }) => (
   </svg>
 )
 
-export function LifestyleSection() {
+export function LifestyleSection({ contentfulAssets }: LifestyleSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
+
+  // Usar imágenes de lifestyle de Contentful o fallback
+  const images = contentfulAssets?.lifestyleImages?.length 
+    ? contentfulAssets.lifestyleImages.map((imageUrl, index) => ({
+        src: imageUrl,
+        alt: fallbackImages[index]?.alt || `Lifestyle image ${index + 1}`
+      }))
+    : fallbackImages
+
+  // Debug: Mostrar qué imágenes se están usando
+  useEffect(() => {
+    if (contentfulAssets?.lifestyleImages?.length) {
+      console.log('🏠 Lifestyle usando Contentful images:', contentfulAssets.lifestyleImages.length, 'imágenes')
+    } else {
+      console.log('🏠 Lifestyle usando fallback images:', fallbackImages.length, 'imágenes')
+    }
+  }, [contentfulAssets])
 
   // Función para verificar la posición del scroll
   const checkScrollPosition = () => {
     const scrollElement = scrollRef.current
     if (scrollElement) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollElement
-      
-      console.log('Scroll info:', { scrollLeft, scrollWidth, clientWidth }) // Debug
       
       // Mostrar botón izquierdo si no estamos al inicio (con más margen)
       const isAtStart = scrollLeft <= 5
@@ -60,8 +80,6 @@ export function LifestyleSection() {
       // Mostrar botón derecho si no estamos al final (con más margen)
       const isAtEnd = scrollLeft >= (scrollWidth - clientWidth - 5)
       setShowRightButton(!isAtEnd)
-      
-      console.log('Button states:', { showLeft: !isAtStart, showRight: !isAtEnd }) // Debug
     }
   }
 

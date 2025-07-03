@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 641.64 353.55">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: Beatrice-Light, Beatrice;
+        font-size: 270.05px;
+        font-weight: 300;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #99907c;
+      }
+
+      .cls-3 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-4 {
+        letter-spacing: -.13em;
+      }
+
+      .cls-5 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-6 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-7 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-8 {
+        letter-spacing: 0em;
+      }
+
+      .cls-9 {
+        letter-spacing: 0em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.01em;
+      }
+
+      .cls-11 {
+        letter-spacing: 0em;
+      }
+
+      .cls-12 {
+        letter-spacing: 0em;
+      }
+
+      .cls-13 {
+        letter-spacing: 0em;
+      }
+
+      .cls-14 {
+        letter-spacing: 0em;
+      }
+
+      .cls-2 {
+        font-family: Beatrice-Regular, Beatrice;
+        font-size: 79.58px;
+      }
+    </style>
+  </defs>
+  <g id="PLANTAS">
+    <g>
+      <text class="cls-1" transform="translate(0 233.59)"><tspan x="0" y="0">V</tspan><tspan class="cls-14" x="188.22" y="0">I</tspan><tspan class="cls-13" x="255.73" y="0">R</tspan><tspan x="444.77" y="0">A</tspan></text>
+      <text class="cls-2" transform="translate(54.86 331.74)"><tspan class="cls-11" x="0" y="0">T</tspan><tspan class="cls-8" x="51.09" y="0">R</tspan><tspan class="cls-6" x="106.88" y="0">I</tspan><tspan class="cls-10" x="126.45" y="0">UN</tspan><tspan class="cls-7" x="242.72" y="0">V</tspan><tspan class="cls-5" x="298.19" y="0">I</tspan><tspan class="cls-12" x="318.09" y="0">R</tspan><tspan class="cls-4" x="373.79" y="0">A</tspan><tspan class="cls-3" x="421.38" y="0">T</tspan><tspan class="cls-9" x="468.73" y="0">O</tspan></text>
+    </g>
+  </g>
+</svg>
