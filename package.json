@@ -8,7 +8,8 @@
     "build:static": "STATIC_EXPORT=true next build",
     "build:vercel": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify:contentful": "node scripts/verify-contentful.js"
   },
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.2.0",

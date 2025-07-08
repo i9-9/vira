@@ -10,6 +10,7 @@ import { ContactForm } from "@/components/ContactForm"
 import { Footer } from "@/components/Footer"
 import { getLandingAssets, convertToContentfulAssets } from "@/lib/contentful"
 import { ClientContentfulProvider } from "@/components/ClientContentfulProvider"
+import { ContentfulDebugger } from "@/components/ContentfulDebugger"
 
 // Configuración de ISR para Vercel
 export const revalidate = 300 // Revalidar cada 5 minutos
@@ -37,6 +38,9 @@ export default async function Home() {
           <TypologiesSection />
           <ContactForm />
           <Footer />
+          
+          {/* Debugger para verificar que los assets vienen de Contentful */}
+          <ContentfulDebugger contentfulAssets={contentfulAssets} isServerSide={true} />
         </>
       ) : (
         <Suspense fallback={<div>Loading...</div>}>
