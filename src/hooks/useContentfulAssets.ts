@@ -58,19 +58,30 @@ export function useContentfulAssets(): UseContentfulAssetsResult {
     // Carga inicial
     loadAssets(true)
 
-    // Polling cada 5 minutos para detectar cambios automáticamente
-    const pollInterval = setInterval(() => {
-      if (mounted) {
-        loadAssets(false)
+    // Polling solo en static export o desarrollo
+    // En Vercel con ISR, no necesitamos polling porque se regenera automáticamente
+    const isStaticExport = process.env.STATIC_EXPORT === 'true'
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    
+    if (isStaticExport || isDevelopment) {
+      const pollInterval = setInterval(() => {
+        if (mounted) {
+          loadAssets(false)
+        }
+      }, 5 * 60 * 1000) // 5 minutos
+
+      console.log('🔄 Polling automático configurado cada 5 minutos')
+
+      // Cleanup
+      return () => {
+        mounted = false
+        clearInterval(pollInterval)
       }
-    }, 5 * 60 * 1000) // 5 minutos
-
-    console.log('🔄 Polling automático configurado cada 5 minutos')
-
-    // Cleanup
-    return () => {
-      mounted = false
-      clearInterval(pollInterval)
+    } else {
+      console.log('🚀 Modo Vercel detectado - sin polling (ISR automático)')
+      return () => {
+        mounted = false
+      }
     }
   }, [loadAssets])
 

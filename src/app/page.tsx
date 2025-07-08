@@ -1,6 +1,4 @@
-'use client'
-
-import { useEffect } from 'react'
+import { Suspense } from 'react'
 import { Header } from "@/components/Header"
 import { HeroSection, HeroTextBlock } from "@/components/HeroSection"
 import { LocationSection } from "@/components/LocationSection"
@@ -10,38 +8,41 @@ import { GallerySection } from "@/components/GallerySection"
 import { TypologiesSection } from "@/components/TypologiesSection"
 import { ContactForm } from "@/components/ContactForm"
 import { Footer } from "@/components/Footer"
-import { useContentfulAssets } from "@/hooks/useContentfulAssets"
+import { getLandingAssets, convertToContentfulAssets } from "@/lib/contentful"
+import { ClientContentfulProvider } from "@/components/ClientContentfulProvider"
 
-export default function Home() {
-  // Cargar datos de Contentful desde client-side
-  const { assets: contentfulAssets, loading, forceReload } = useContentfulAssets()
+// Configuración de ISR para Vercel
+export const revalidate = 300 // Revalidar cada 5 minutos
 
-  // Exponer función de recarga manual en la consola para debugging (solo desarrollo)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-      // @ts-expect-error - Agregando función global para debugging
-      window.reloadContentful = forceReload
-      console.log('🔧 Debug: Usa window.reloadContentful() para forzar recarga de imágenes')
-    }
-  }, [forceReload])
-
-  // Loading state opcional - las imágenes fallback se muestran mientras carga
-  if (loading) {
-    console.log('🔄 Cargando assets de Contentful...')
-  }
+export default async function Home() {
+  // En Vercel: Cargar datos server-side para ISR
+  // En static export: getLandingAssets retorna null, se usa client-side
+  const serverAssets = await getLandingAssets()
+  const contentfulAssets = serverAssets ? convertToContentfulAssets(serverAssets) : null
 
   return (
     <main className="min-h-screen">
       <Header />
-      <HeroSection contentfulAssets={contentfulAssets} />
-      <HeroTextBlock />
-      <LocationSection />
-      <LifestyleSection contentfulAssets={contentfulAssets} />
-      <AmenitiesSection />
-      <GallerySection contentfulAssets={contentfulAssets} />
-      <TypologiesSection />
-      <ContactForm />
-      <Footer />
+      
+      {/* En Vercel: Usar datos server-side */}
+      {/* En static export: Usar ClientContentfulProvider */}
+      {contentfulAssets ? (
+        <>
+          <HeroSection contentfulAssets={contentfulAssets} />
+          <HeroTextBlock />
+          <LocationSection />
+          <LifestyleSection contentfulAssets={contentfulAssets} />
+          <AmenitiesSection />
+          <GallerySection contentfulAssets={contentfulAssets} />
+          <TypologiesSection />
+          <ContactForm />
+          <Footer />
+        </>
+      ) : (
+        <Suspense fallback={<div>Loading...</div>}>
+          <ClientContentfulProvider />
+        </Suspense>
+      )}
     </main>
   )
 }

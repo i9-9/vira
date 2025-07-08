@@ -1,4 +1,5 @@
 import { createClient } from 'contentful'
+import type { ContentfulAssets } from './contentful-client'
 
 interface ContentfulAsset {
   fields: {
@@ -67,6 +68,38 @@ export const getLandingAssets = async (): Promise<LandingAssetsFields | null> =>
   } catch (error) {
     console.error('Error fetching from Contentful:', error)
     return null
+  }
+}
+
+// Función para convertir LandingAssetsFields a ContentfulAssets
+export function convertToContentfulAssets(fields: LandingAssetsFields): ContentfulAssets {
+  return {
+    heroImages: {
+      left: fields.heroLeftImage?.fields?.file?.url 
+        ? `https:${fields.heroLeftImage.fields.file.url}?fm=webp&q=90&w=1920&h=1080&fit=fill`
+        : '',
+      right: fields.heroRightImage?.fields?.file?.url 
+        ? `https:${fields.heroRightImage.fields.file.url}?fm=webp&q=90&w=1920&h=1080&fit=fill`
+        : '',
+    },
+    galleryImages: fields.galleryImages?.map(img => 
+      img.fields?.file?.url 
+        ? `https:${img.fields.file.url}?fm=webp&q=90&w=1200&h=800&fit=fill`
+        : ''
+    ).filter(Boolean) || [],
+    lifestyleImages: fields.lifestyleImages?.map(img => 
+      img.fields?.file?.url 
+        ? `https:${img.fields.file.url}?fm=webp&q=85&w=800&h=600&fit=fill`
+        : ''
+    ).filter(Boolean) || [],
+    documents: {
+      brochure: fields.brochurePdf?.fields?.file?.url 
+        ? `https:${fields.brochurePdf.fields.file.url}`
+        : '',
+      typologies: fields.typologiesPdf?.fields?.file?.url 
+        ? `https:${fields.typologiesPdf.fields.file.url}`
+        : '',
+    },
   }
 }
 
