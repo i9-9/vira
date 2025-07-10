@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/seo/whatsapp.jpg",
+        url: "https://vira-zeta.vercel.app/images/seo/whatsapp.jpg",
         width: 1200,
         height: 630,
         alt: "VIRA Triunvirato - Proyecto Inmobiliario Villa Urquiza",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VIRA Triunvirato - Proyecto Inmobiliario Premium en Villa Urquiza",
     description: "Que tu vida vire a la comodidad que necesitás. Nuevo proyecto inmobiliario en Av. Triunvirato y Los Incas.",
-    images: ["/images/seo/whatsapp.jpg"],
+    images: ["https://vira-zeta.vercel.app/images/seo/whatsapp.jpg"],
   },
   robots: {
     index: true,
