@@ -8,6 +8,11 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ contentfulAssets }: HeroSectionProps) {
+  // Debug: verificar qué imágenes se están usando
+  console.log('🖼️ HeroSection - URLs de imágenes:')
+  console.log('   Left:', contentfulAssets?.heroImages?.left ? '✅ Contentful' : '❌ Fallback')
+  console.log('   Right:', contentfulAssets?.heroImages?.right ? '✅ Contentful' : '❌ Fallback')
+  
   return (
     <section
       id="inicio"

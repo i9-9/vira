@@ -35,7 +35,7 @@ export default async function Home() {
           <LifestyleSection contentfulAssets={contentfulAssets} />
           <AmenitiesSection />
           <GallerySection contentfulAssets={contentfulAssets} />
-          <TypologiesSection />
+          <TypologiesSection contentfulAssets={contentfulAssets} />
           <ContactForm />
           <Footer />
           

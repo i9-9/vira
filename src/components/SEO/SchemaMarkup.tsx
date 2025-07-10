@@ -10,7 +10,7 @@ export function SchemaMarkup() {
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. Triunvirato y Av. de Los Incas",
-      "addressLocality": "Villa Crespo",
+      "addressLocality": "Villa Ortúzar",
       "addressRegion": "Ciudad Autónoma de Buenos Aires",
       "postalCode": "1414",
       "addressCountry": "AR"
@@ -43,7 +43,7 @@ export function SchemaMarkup() {
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. Triunvirato y Av. de Los Incas",
-      "addressLocality": "Villa Crespo", 
+      "addressLocality": "Villa Ortúzar", 
       "addressRegion": "Ciudad Autónoma de Buenos Aires",
       "postalCode": "1414",
       "addressCountry": "AR"

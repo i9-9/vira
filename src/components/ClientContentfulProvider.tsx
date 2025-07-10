@@ -38,7 +38,7 @@ export function ClientContentfulProvider() {
       <LifestyleSection contentfulAssets={contentfulAssets} />
       <AmenitiesSection />
       <GallerySection contentfulAssets={contentfulAssets} />
-      <TypologiesSection />
+      <TypologiesSection contentfulAssets={contentfulAssets} />
       <ContactForm />
       <Footer />
       

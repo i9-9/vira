@@ -9,7 +9,9 @@
     "build:vercel": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify:contentful": "node scripts/verify-contentful.js"
+    "verify:contentful": "node scripts/verify-contentful.js",
+    "verify:pdfs": "node scripts/verify-pdfs.js",
+    "verify:hero": "node scripts/verify-hero-images.js"
   },
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.2.0",
