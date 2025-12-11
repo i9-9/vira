@@ -66,6 +66,18 @@ export function ContactForm() {
               </div>
               <div className="w-full md:flex-1 flex flex-col">
                 <input
+                  {...register("telefono")}
+                  type="tel"
+                  placeholder="Teléfono*"
+                  className={`bg-transparent border-0 border-b ${errors.telefono ? 'border-red-500' : 'border-[#444]'} focus:outline-none focus:border-black text-lg text-[#222] py-2 font-light placeholder:text-[#222] placeholder:font-normal w-full`}
+                  autoComplete="tel"
+                />
+                {errors.telefono && (
+                  <span className="text-red-500 text-sm mt-1">{errors.telefono.message}</span>
+                )}
+              </div>
+              <div className="w-full md:flex-1 flex flex-col">
+                <input
                   {...register("email")}
                   type="email"
                   placeholder="Email*"

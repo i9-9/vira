@@ -8,22 +8,23 @@ export async function submitToGoogleSheets(formData: FormData): Promise<boolean>
       throw new Error('Error de configuración del formulario');
     }
 
-    // Create FormData for proper form submission
-    const data = new FormData();
+    // Enviar como URLSearchParams para mejor compatibilidad con Google Apps Script
+    const params = new URLSearchParams();
     
-    // Add each field individually
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) data.append(key, value);
-    });
-
-    // Add additional data
-    data.append('utmSource', window.location.href);
-    data.append('userAgent', navigator.userAgent);
+    // Agregar campos en el orden correcto
+    params.append('nombre', formData.nombre || '');
+    params.append('telefono', formData.telefono || '');
+    params.append('email', formData.email || '');
+    params.append('utmSource', window.location.href);
+    params.append('userAgent', navigator.userAgent);
 
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'cors',
-      body: data,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
     });
 
     if (!response.ok) {

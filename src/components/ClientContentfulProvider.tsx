@@ -10,7 +10,6 @@ import { TypologiesSection } from "@/components/TypologiesSection"
 import { ContactForm } from "@/components/ContactForm"
 import { Footer } from "@/components/Footer"
 import { useContentfulAssets } from "@/hooks/useContentfulAssets"
-import { ContentfulDebugger } from "@/components/ContentfulDebugger"
 
 export function ClientContentfulProvider() {
   // Cargar datos de Contentful desde client-side
@@ -41,9 +40,6 @@ export function ClientContentfulProvider() {
       <TypologiesSection contentfulAssets={contentfulAssets} />
       <ContactForm />
       <Footer />
-      
-      {/* Debugger para verificar que los assets vienen de Contentful */}
-      <ContentfulDebugger contentfulAssets={contentfulAssets} isServerSide={false} />
     </>
   )
 } 
