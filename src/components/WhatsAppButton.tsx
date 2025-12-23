@@ -2,7 +2,7 @@
 
 export function WhatsAppButton() {
   // Configurá tu número de WhatsApp aquí (formato: código de país + número sin espacios ni símbolos)
-  const phoneNumber = "5491112345678" // Ejemplo: 549 (Argentina) + 11 (código de área) + número
+  const phoneNumber = "5491128780571" // +54 9 11 2878 0571
   const message = "Hola, estoy interesado en el proyecto VIRA Triunvirato"
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
