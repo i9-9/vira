@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Formulario VIRA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Formulario VIRA</h1>
+    <p>Esta página prueba ambas integraciones: Google Sheets y Tokko Broker</p>
+
+    <form id="testForm">
+        <input type="text" id="nombre" name="nombre" placeholder="Nombre y Apellido" required>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <input type="tel" id="telefono" name="telefono" placeholder="Teléfono">
+        <button type="submit">Enviar Prueba</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyffjiHdYE6cYBzKZpXnv83F9HAm_oJnxfYRHBTjujC80kxIYdWM0NP7BimLsAHEWpP/exec';
+
+        async function submitToGoogleSheets(data) {
+            const formData = new FormData();
+            formData.append('nombre', data.nombre);
+            formData.append('email', data.email);
+            if (data.telefono) formData.append('telefono', data.telefono);
+            formData.append('utmSource', window.location.href);
+            formData.append('userAgent', navigator.userAgent);
+
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                body: formData,
+            });
+
+            const text = await response.text();
+            console.log('Google Sheets response:', text);
+
+            return response.ok ? JSON.parse(text) : Promise.reject(new Error('Google Sheets error'));
+        }
+
+        async function submitToTokko(data) {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) throw new Error('Tokko error');
+            return response.json();
+        }
+
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'info';
+            resultDiv.innerHTML = '<strong>Enviando...</strong><br>Probando Google Sheets y Tokko Broker...';
+
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+            };
+
+            try {
+                const [googleResult, tokkoResult] = await Promise.allSettled([
+                    submitToGoogleSheets(data),
+                    submitToTokko(data)
+                ]);
+
+                console.log('Google Sheets result:', googleResult);
+                console.log('Tokko result:', tokkoResult);
+
+                let html = '<strong>Resultados:</strong><br><br>';
+
+                if (googleResult.status === 'fulfilled') {
+                    html += '✅ <strong>Google Sheets</strong>: Éxito<br>';
+                    html += `Respuesta: ${JSON.stringify(googleResult.value)}<br><br>`;
+                } else {
+                    html += '❌ <strong>Google Sheets</strong>: Error<br>';
+                    html += `Error: ${googleResult.reason.message}<br><br>`;
+                }
+
+                if (tokkoResult.status === 'fulfilled') {
+                    html += '✅ <strong>Tokko Broker</strong>: Éxito<br>';
+                    html += `Respuesta: ${JSON.stringify(tokkoResult.value)}<br><br>`;
+                } else {
+                    html += '❌ <strong>Tokko Broker</strong>: Error<br>';
+                    html += `Error: ${tokkoResult.reason.message}<br><br>`;
+                }
+
+                const hasSuccess = googleResult.status === 'fulfilled' || tokkoResult.status === 'fulfilled';
+                resultDiv.className = hasSuccess ? 'success' : 'error';
+                resultDiv.innerHTML = html;
+
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

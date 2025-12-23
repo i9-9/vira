@@ -25,11 +25,85 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 shadow-sm border-b border-[#c0b8ab]/30 backdrop-blur-md">
-        <div className="w-full max-w-7xl mx-auto px-[15px] py-4 md:py-8 flex items-center justify-between relative h-[80px] md:h-[120px]">
+        {/* Logo P&G - Left - Positioned relative to header */}
+        <a 
+          href="https://www.pygdesarrollos.com.ar" 
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute left-6 md:left-16 top-1/2 -translate-y-1/2 block h-14 md:h-20 w-auto z-10 hover:opacity-80 transition-opacity duration-300"
+        >
+          <img 
+            src="/logos/p-g.png"
+            alt="P&G Desarrollos" 
+            width={80}
+            height={40}
+            className="h-14 md:h-20 w-auto object-contain"
+          />
+        </a>
+
+        {/* Contact Button - Desktop Only - Positioned relative to header */}
+        <button
+          onClick={() => handleNavigation("contacto")}
+          className="hidden md:flex items-center justify-center px-6 py-3 bg-[#c0b8ab] text-white text-sm font-medium hover:bg-[#a89d8f] hover:cursor-pointer transition-all duration-300 rounded-sm absolute right-6 md:right-16 top-1/2 -translate-y-1/2"
+          style={{ fontFamily: 'Beatrice, Arial, sans-serif' }}
+        >
+          Contacto
+        </button>
+
+        {/* Mobile Menu Button - Positioned relative to header */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center z-50"
+          aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          <div className="relative w-6 h-6 flex items-center justify-center">
+            {/* Línea superior */}
+            <motion.span
+              className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
+              animate={{
+                rotate: isOpen ? 45 : 0,
+                y: isOpen ? 0 : -8,
+              }}
+              transition={{ 
+                duration: 0.3, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+            />
+            
+            {/* Línea del medio */}
+            <motion.span
+              className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
+              animate={{
+                opacity: isOpen ? 0 : 1,
+                scaleX: isOpen ? 0 : 1,
+              }}
+              transition={{ 
+                duration: 0.3, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+            />
+            
+            {/* Línea inferior */}
+            <motion.span
+              className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
+              animate={{
+                rotate: isOpen ? -45 : 0,
+                y: isOpen ? 0 : 8,
+              }}
+              transition={{ 
+                duration: 0.3, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+            />
+          </div>
+        </button>
+
+        {/* Container for VIRA logo - centered */}
+        <div className="w-full max-w-7xl mx-auto px-6 md:px-16 py-4 md:py-8 flex items-center justify-center h-[80px] md:h-[120px]">
           {/* Logo VIRA - Center */}
           <a 
             href="#inicio" 
-            className="absolute left-1/2 -translate-x-1/2 block h-16 md:h-24 w-auto"
+            className="block h-16 md:h-24 w-auto"
           >
             <img 
               src="/logos/vira_1.png"
@@ -37,57 +111,8 @@ export function Header() {
               width={120}
               height={48}
               className="h-16 md:h-24 w-auto object-contain"
-
             />
           </a>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden relative w-12 h-12 flex items-center justify-center z-50"
-            aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
-          >
-            <div className="relative w-6 h-6 flex items-center justify-center">
-              {/* Línea superior */}
-              <motion.span
-                className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
-                animate={{
-                  rotate: isOpen ? 45 : 0,
-                  y: isOpen ? 0 : -8,
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: [0.4, 0, 0.2, 1] 
-                }}
-              />
-              
-              {/* Línea del medio */}
-              <motion.span
-                className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
-                animate={{
-                  opacity: isOpen ? 0 : 1,
-                  scaleX: isOpen ? 0 : 1,
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: [0.4, 0, 0.2, 1] 
-                }}
-              />
-              
-              {/* Línea inferior */}
-              <motion.span
-                className="absolute h-0.5 w-6 bg-[#c0b8ab] rounded-full origin-center"
-                animate={{
-                  rotate: isOpen ? -45 : 0,
-                  y: isOpen ? 0 : 8,
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: [0.4, 0, 0.2, 1] 
-                }}
-              />
-            </div>
-          </button>
         </div>
       </header>
 
