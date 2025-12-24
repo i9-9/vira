@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     let tokkoResult
     try {
       tokkoResult = responseText ? JSON.parse(responseText) : { success: true }
-    } catch (e) {
+    } catch {
       console.warn('Could not parse Tokko response as JSON:', responseText)
       tokkoResult = { success: true, raw: responseText }
     }
