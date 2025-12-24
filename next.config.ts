@@ -6,10 +6,9 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   
   // Configuración para Vercel con ISR
-  experimental: {
-    // Habilitar ISR para Vercel
-    // isrMemoryCacheSize: 0, // Removido - no existe en Next.js 15
-  },
+  // experimental: {
+  //   // Configuraciones experimentales si son necesarias
+  // },
   
   images: {
     unoptimized: process.env.STATIC_EXPORT === 'true',

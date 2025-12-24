@@ -4,9 +4,9 @@ export function SchemaMarkup() {
     "@type": "RealEstateAgent",
     "name": "VIRA Triunvirato",
     "description": "Proyecto inmobiliario premium en Buenos Aires. Amenities de lujo, ubicación estratégica en Av. Triunvirato y Los Incas.",
-    "url": "https://vira.com.ar",
-    "logo": "https://vira.com.ar/logos/vira_1.png",
-    "image": "https://vira.com.ar/og-image.png",
+    "url": "https://viratriunvirato.com.ar",
+    "logo": "https://viratriunvirato.com.ar/logos/vira_1.png",
+    "image": "https://viratriunvirato.com.ar/og-image.png",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. Triunvirato y Av. de Los Incas",
@@ -110,7 +110,7 @@ export function SchemaMarkup() {
     "name": "P&G Desarrollos Urbanos",
     "description": "Desarrolladora inmobiliaria especializada en proyectos premium en Buenos Aires.",
     "url": "https://pyg-desarrollos.com.ar",
-    "logo": "https://vira.com.ar/logos/p-g.png",
+    "logo": "https://viratriunvirato.com.ar/logos/p-g.png",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Buenos Aires",

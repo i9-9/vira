@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://vira.com.ar"),
+  metadataBase: new URL("https://viratriunvirato.com.ar"),
   alternates: {
     canonical: "/",
   },
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VIRA Triunvirato - Proyecto Inmobiliario Premium en Villa Urquiza",
     description: "Que tu vida vire a la comodidad que necesitás. Nuevo proyecto inmobiliario en Av. Triunvirato y Los Incas. Amenidades premium, ubicación estratégica en Villa Urquiza.",
-    url: "https://vira.com.ar",
+    url: "https://viratriunvirato.com.ar",
     siteName: "VIRA Triunvirato",
     locale: "es_AR",
     type: "website",

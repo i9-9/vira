@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://vira.com.ar'
+  const baseUrl = 'https://viratriunvirato.com.ar'
   
   return [
     {

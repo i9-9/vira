@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/private/', '/admin/'],
     },
-    sitemap: 'https://vira.com.ar/sitemap.xml',
+    sitemap: 'https://viratriunvirato.com.ar/sitemap.xml',
   }
 } 

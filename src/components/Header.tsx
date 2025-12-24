@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { smoothScrollTo } from "@/lib/utils"
 
@@ -32,12 +33,13 @@ export function Header() {
           rel="noopener noreferrer"
           className="absolute left-6 md:left-16 top-1/2 -translate-y-1/2 block h-14 md:h-20 w-auto z-10 hover:opacity-80 transition-opacity duration-300"
         >
-          <img 
+          <Image 
             src="/logos/p-g.png"
             alt="P&G Desarrollos" 
             width={80}
             height={40}
             className="h-14 md:h-20 w-auto object-contain"
+            priority
           />
         </a>
 
@@ -105,12 +107,13 @@ export function Header() {
             href="#inicio" 
             className="block h-16 md:h-24 w-auto"
           >
-            <img 
+            <Image 
               src="/logos/vira_1.png"
               alt="VIRA" 
               width={120}
               height={48}
               className="h-16 md:h-24 w-auto object-contain"
+              priority
             />
           </a>
         </div>
