@@ -13,33 +13,57 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate API key is configured
+    const apiKey = process.env.TOKKO_API_KEY
+    if (!apiKey) {
+      console.error('TOKKO_API_KEY no está configurada')
+      return NextResponse.json(
+        { error: 'Error de configuración del servidor' },
+        { status: 500 }
+      )
+    }
+
     // Prepare data for Tokko Broker WebContact API
+    // Based on Tokko documentation: https://developers.tokkobroker.com/docs/contact-form
     const tokkoData = {
       name: nombre,
       email: email,
+      phone: telefono || '',
       cellphone: telefono || '',
-      tags: ['WEB_CONTACT', 'VIRA_LANDING']
+      text: `Consulta desde VIRA Landing - ${nombre} (${email})`,
+      tags: ['VIRA_LANDING']
     }
 
+    console.log('📤 Enviando a Tokko Broker...')
+    console.log('Endpoint: https://www.tokkobroker.com/api/v1/webcontact/')
+    console.log('Data:', JSON.stringify(tokkoData, null, 2))
+
     // Send to Tokko Broker WebContact endpoint
+    // IMPORTANT: Use HTTPS and www subdomain
     const tokkoResponse = await fetch(
-      `http://tokkobroker.com/api/v1/webcontact/?key=${process.env.TOKKO_API_KEY}`,
+      `https://www.tokkobroker.com/api/v1/webcontact/?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(tokkoData),
       }
     )
 
     const responseText = await tokkoResponse.text()
-    console.log('Tokko Broker response status:', tokkoResponse.status)
-    console.log('Tokko Broker response:', responseText)
+    console.log('📥 Tokko Broker response status:', tokkoResponse.status)
+    console.log('📥 Tokko Broker response headers:', Object.fromEntries(tokkoResponse.headers.entries()))
+    console.log('📥 Tokko Broker response body:', responseText)
 
     if (!tokkoResponse.ok) {
-      console.error('Tokko Broker error:', responseText)
-      throw new Error(`Error al enviar a Tokko Broker: ${tokkoResponse.status}`)
+      console.error('❌ Tokko Broker error:', {
+        status: tokkoResponse.status,
+        statusText: tokkoResponse.statusText,
+        body: responseText
+      })
+      throw new Error(`Error al enviar a Tokko Broker: ${tokkoResponse.status} - ${responseText}`)
     }
 
     // Try to parse JSON, but handle empty responses
@@ -51,6 +75,8 @@ export async function POST(request: NextRequest) {
       tokkoResult = { success: true, raw: responseText }
     }
 
+    console.log('✅ Contacto enviado exitosamente a Tokko Broker')
+
     return NextResponse.json({
       success: true,
       tokko: tokkoResult,
@@ -58,7 +84,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error en API contact:', error)
+    console.error('❌ Error en API contact:', error)
     return NextResponse.json(
       {
         error: 'Error al procesar la solicitud',
